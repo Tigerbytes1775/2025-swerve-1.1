@@ -56,18 +56,20 @@ public class RobotContainer {
     drivebase.setDefaultCommand(DriveFieldOrientedAngularVelocity);
   }
 
-  SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(), 
-                                                                            () -> m_driverController.getLeftY() * -1,
-                                                                            () -> m_driverController.getLeftX() * -1)
-                                                                            .withControllerRotationAxis(m_driverController::getRightX)
-                                                                            .deadband(OperatorConstants.DEADBAND)
-                                                                            .scaleTranslation(0.8)
-                                                                            .allianceRelativeControl(true);
+  SwerveInputStream driveAngularVelocity = SwerveInputStream.of(
+    drivebase.getSwerveDrive(), 
+    () -> m_driverController.getLeftY() * -1,
+    () -> m_driverController.getLeftX() * -1
+  )
+    .withControllerRotationAxis(m_driverController::getRightX)
+    .deadband(OperatorConstants.DEADBAND)
+    .scaleTranslation(0.8)
+    .allianceRelativeControl(true);
 
   SwerveInputStream driveDirectAngle = driveAngularVelocity.copy().withControllerHeadingAxis(m_driverController::getRightX,
                                                                                              m_driverController::getRightY)
-                                                                                             .headingWhile(false);
-                                                                                            
+                                                                                                      .headingWhile(false);
+  //affects the things                                                                                 
   Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle); 
 
   Command DriveFieldOrientedAngularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
