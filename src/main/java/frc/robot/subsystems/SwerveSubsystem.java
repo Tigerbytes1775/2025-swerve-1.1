@@ -35,7 +35,7 @@ import swervelib.parser.SwerveParser;
 public class SwerveSubsystem extends SubsystemBase {
 
   File directory = new File(Filesystem.getDeployDirectory(), "swerve");
-  SwerveDrive swerveDrive;
+  public static SwerveDrive swerveDrive;
 
   public SwerveSubsystem() {
     try {

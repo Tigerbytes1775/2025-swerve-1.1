@@ -4,9 +4,26 @@
 
 package frc.robot;
 
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
+
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.Swerve.ModuleConstants;
+//import frc.robot.subsystems.SwerveModule;
+import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Vision;
+import swervelib.SwerveDrive;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -19,6 +36,26 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  private Vision vision;
+  private SwerveDrive swerveDrive;
+
+
+
+  private SwerveDrivePoseEstimator swervePoseEstimator;
+
+  
+
+  
+  
+  
+  Transform3d robotToCam1 =
+    new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+
+  Transform3d robotToCam2 =
+    new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+
+
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -27,7 +64,11 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+   
     m_robotContainer = new RobotContainer();
+    vision = new Vision();
+    swerveDrive = SwerveSubsystem.swerveDrive;
+    swervePoseEstimator = swerveDrive.swerveDrivePoseEstimator;
   }
 
   /**
@@ -44,6 +85,34 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+
+    // Update the odometry of the swerve drive using the wheel encoders and gyro.
+    
+
+    swerveDrive.updateOdometry();
+    //for(var visionEst : vision.UpdateGlobalPose()) {
+
+    var visionEst = vision.GetVisionEstimate();
+    visionEst.ifPresent(
+      est -> {
+        // Change our trust in the measurement based on the tags we can see
+        var estStdDevs = vision.getEstimationStdDevs();
+
+        Pose2d estPose = est.estimatedPose.toPose2d();
+        double[] poseEstArray = {estPose.getMeasureX().magnitude(), estPose.getMeasureY().magnitude()};
+          
+        swerveDrive.addVisionMeasurement(
+          est.estimatedPose.toPose2d(), 
+          est.timestampSeconds, 
+          estStdDevs
+        );
+
+        SmartDashboard.putNumberArray("Robot Pose Est:", poseEstArray);
+        //est.timestampSeconds, estStdDevs;
+      }
+    );
+    //}
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
