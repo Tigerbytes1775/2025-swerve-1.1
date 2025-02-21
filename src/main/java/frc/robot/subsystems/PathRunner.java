@@ -7,7 +7,9 @@ import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import swervelib.SwerveDrive;
 
 public class PathRunner extends SubsystemBase {
 
@@ -19,18 +21,21 @@ public class PathRunner extends SubsystemBase {
         3.0, 4.0,
         Units.degreesToRadians(540), Units.degreesToRadians(720));
 
-    /*Command pathfindingCommand = AutoBuilder.pathfindToPose(
-        targetPose,
-        constraints,
-        0.0// Goal end velocity in meters/sec
+    private final Command goToFeeder = AutoBuilder.pathfindToPose(
+        feederPose, 
+        constraints, 
+        0.0
+    );
 
-    );*/
+    private Command currentCommand;
 
-//    public void stopPaths() {
-//        pathPlannerFollower.cancelPath();
-//    }
+    
+    public void stopPaths() {
+        currentCommand.cancel();
+    }
 
     public void goToFeeder() {
-        AutoBuilder.pathfindToPose(feederPose, constraints, 0.0).schedule();
+        currentCommand = goToFeeder;
+        currentCommand.schedule();
     }
 }
