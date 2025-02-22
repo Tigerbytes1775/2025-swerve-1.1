@@ -13,22 +13,27 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PathRunner extends SubsystemBase {
 
+    private final Pose2d feederPose;
 
+    private final PathConstraints constraints;
 
-    Pose2d feederPose = new Pose2d(1.177, 6.957, Rotation2d.fromDegrees(-126.076));
-
-    PathConstraints constraints = new PathConstraints(
-        3.0, 4.0,
-        Units.degreesToRadians(540), Units.degreesToRadians(720));
-
-    private final Command goToFeeder = AutoBuilder.pathfindToPose(
-        feederPose, 
-        constraints, 
-        0.0
-    );
-
+    private final Command goToFeeder;
     private Command currentCommand;
 
+    public PathRunner() {
+        this.feederPose = new Pose2d(1.177, 6.957, Rotation2d.fromDegrees(-126.076));
+        this.constraints = new PathConstraints(
+            3.0, 4.0,
+            Units.degreesToRadians(540), Units.degreesToRadians(720));
+
+        goToFeeder = AutoBuilder.pathfindToPose(
+            feederPose, 
+            constraints, 
+            0.0
+        );
+    }
+
+    
 
     public void stopPaths() {
         currentCommand.cancel();

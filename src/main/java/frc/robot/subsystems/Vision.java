@@ -34,7 +34,10 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import swervelib.SwerveDrive;
 import edu.wpi.first.math.geometry.Translation3d;
 //import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +52,7 @@ import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.geometry.Rotation3d;
 
-public class Vision {
+public class Vision extends SubsystemBase {
 
     private final Transform3d robotToCam1 = new Transform3d(
         new Translation3d(0.15, 0.15, 0.15), 
@@ -60,13 +63,13 @@ public class Vision {
     private final PhotonCamera cam1 = new PhotonCamera("cam1");
     //private final PhotonCamera cam2 = new PhotonCamera("cam2");
     private final PhotonPoseEstimator photonEstimator1 =
-       new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam1);;
+       new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam1);
     //private final PhotonPoseEstimator photonEstimator2 =
     //   new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam1);;
 
     private final PhotonCamera[] cams = {
        cam1
-    //   cam2
+        //cam2
     };
 
     private final PhotonPoseEstimator[] photonEstimators = {
@@ -79,11 +82,12 @@ public class Vision {
     // Simulation
     private PhotonCameraSim cameraSim;
     private VisionSystemSim visionSim;
+    private final SwerveDrive swerveDrive;
 
-    public Vision() {
+    public Vision(SwerveDrive swerveDrive) {
         
 
-        
+        this.swerveDrive = swerveDrive;
         
         photonEstimator1.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         //photonEstimator2.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
@@ -123,8 +127,35 @@ public class Vision {
     *     used for estimation.
     */
 
-   public Optional<EstimatedRobotPose> GetVisionEstimate() {
+    public void addVisionMeasurement() {
+
+        swerveDrive.updateOdometry();
+        
+        var visionEst = GetVisionEstimate();
+        visionEst.ifPresent(
+            est -> {
+            // Change our trust in the measurement based on the tags we can see
+            var estStdDevs = getEstimationStdDevs();
+
+            Pose2d estPose = est.estimatedPose.toPose2d();
+            double[] poseEstArray = {estPose.getMeasureX().magnitude(), estPose.getMeasureY().magnitude()};
+          
+            swerveDrive.addVisionMeasurement(
+                est.estimatedPose.toPose2d(), 
+                est.timestampSeconds, 
+                estStdDevs
+            );
+
+            SmartDashboard.putNumberArray("Robot Pose Est:", poseEstArray);
+            //est.timestampSeconds, estStdDevs;
+      }
+    );
+
+    }
+
+    public Optional<EstimatedRobotPose> GetVisionEstimate() {
        //List<Optional<EstimatedRobotPose>> visionEsts = new ArrayList<>();
+       
        Optional<EstimatedRobotPose> visionEst = Optional.empty();
        //for(int i = 0; i < cams.length; i++) {
 

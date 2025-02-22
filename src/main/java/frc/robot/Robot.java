@@ -9,21 +9,14 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 //import com.studica.frc.AHRS;
 //import com.studica.frc.AHRS.NavXComType;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 //import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 //import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-//import frc.robot.Constants.Swerve.ModuleConstants;
-//import frc.robot.subsystems.SwerveModule;
-import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.Vision;
-import swervelib.SwerveDrive;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -36,8 +29,7 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  private Vision vision;
-  private SwerveDrive swerveDrive;
+
 
   
 
@@ -62,8 +54,8 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
    
     m_robotContainer = new RobotContainer();
-    vision = new Vision();
-    swerveDrive = SwerveSubsystem.swerveDrive;
+    
+    
     //swerveDrive = new SwerveDrive();
 
     PathfindingCommand.warmupCommand().schedule();//Helps with subsequent pathfinding commands
@@ -88,28 +80,8 @@ public class Robot extends TimedRobot {
     // Update the odometry of the swerve drive using the wheel encoders and gyro.
     
 
-    swerveDrive.updateOdometry();
+    
     //for(var visionEst : vision.UpdateGlobalPose()) {
-
-    var visionEst = vision.GetVisionEstimate();
-    visionEst.ifPresent(
-      est -> {
-        // Change our trust in the measurement based on the tags we can see
-        var estStdDevs = vision.getEstimationStdDevs();
-
-        Pose2d estPose = est.estimatedPose.toPose2d();
-        double[] poseEstArray = {estPose.getMeasureX().magnitude(), estPose.getMeasureY().magnitude()};
-          
-        swerveDrive.addVisionMeasurement(
-          est.estimatedPose.toPose2d(), 
-          est.timestampSeconds, 
-          estStdDevs
-        );
-
-        SmartDashboard.putNumberArray("Robot Pose Est:", poseEstArray);
-        //est.timestampSeconds, estStdDevs;
-      }
-    );
     //}
   }
 
