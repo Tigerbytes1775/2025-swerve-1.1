@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Vision;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -36,11 +37,7 @@ public class Robot extends TimedRobot {
   
   
   
-  Transform3d robotToCam1 =
-    new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
-
-  Transform3d robotToCam2 =
-    new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+  private Vision vision;
 
 
 
@@ -54,6 +51,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
    
     m_robotContainer = new RobotContainer();
+    vision = m_robotContainer.vision;
     
     
     //swerveDrive = new SwerveDrive();
@@ -76,6 +74,8 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
+    
+    vision.addVisionMeasurement();
 
     // Update the odometry of the swerve drive using the wheel encoders and gyro.
     

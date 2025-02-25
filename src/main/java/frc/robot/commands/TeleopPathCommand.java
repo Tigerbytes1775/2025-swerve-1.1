@@ -46,10 +46,24 @@ public class TeleopPathCommand extends Command {
         }
 
         if(!commandRunning) {
+
+            commandRunning = true;
+            
             if(aButton) {
-                pathRunner.goToFeeder();
-                commandRunning = true;
-            } 
+                pathRunner.goToFeeder1();
+                
+            } else if(bButton) {
+                pathRunner.goToFeeder2();
+                
+            } else if(xButton) {
+                pathRunner.goToProcessor();
+                
+            } else if(yButton) {
+                pathRunner.goToBarge();
+                
+            } else {
+                commandRunning = false;
+            }
         }
  
     }

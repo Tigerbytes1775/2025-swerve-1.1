@@ -11,7 +11,7 @@ public class VisionCommand extends Command {
     public VisionCommand(Vision vision) {
         addRequirements(vision);
         this.vision = vision;
-        SmartDashboard.putBoolean("Vision Runs", false);
+        //SmartDashboard.putBoolean("Vision Runs", true);
     }
 
     
