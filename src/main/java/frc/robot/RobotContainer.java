@@ -125,8 +125,7 @@ public class RobotContainer {
     );
 
     
-    //vision.setDefaultCommand(visionCommand);
-    //visionCommand.ignoringDisable(true);
+    vision.setDefaultCommand(visionCommand);
     
 
     algaePivot.setDefaultCommand(new TeleopAlgaePivotCommand(
