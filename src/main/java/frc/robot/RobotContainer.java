@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.Filesystem;
 //import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
+//import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -71,7 +72,7 @@ public class RobotContainer {
   private final AlgaePivot algaePivot;
   private final PathRunner pathRunner; //= new PathRunner();
 
-  private final VisionCommand visionCommand;
+  public final VisionCommand visionCommand;
 
   
 
@@ -87,8 +88,6 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    
-    
     
     
 
@@ -142,10 +141,11 @@ public class RobotContainer {
         () -> m_driverController.getYButton()
       )
     );
-
     
     vision.setDefaultCommand(visionCommand);
+
     
+
 
     algaePivot.setDefaultCommand(new TeleopAlgaePivotCommand(
         algaePivot,
@@ -233,5 +233,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
+  }
+
+  public Command getVisionCommand() {
+    return visionCommand;
   }
 }

@@ -22,10 +22,9 @@ public class VisionCommand extends Command {
         vision.addVisionMeasurement();
     }
 
-    @Override 
+    @Override
     public boolean runsWhenDisabled() {
         return true;
     }
-        
           
 }

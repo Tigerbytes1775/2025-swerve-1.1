@@ -9,15 +9,20 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 //import com.studica.frc.AHRS;
 //import com.studica.frc.AHRS.NavXComType;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
+//import edu.wpi.first.math.geometry.Rotation3d;
+//import edu.wpi.first.math.geometry.Transform3d;
+//import edu.wpi.first.math.geometry.Translation3d;
 //import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 //import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.TimedRobot;
+//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
+//import frc.robot.commands.VisionCommand;
+
 import frc.robot.subsystems.Vision;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -29,14 +34,6 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-
-
-
-  
-
-  
-  
-  
   private Vision vision;
 
 
@@ -51,7 +48,10 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
    
     m_robotContainer = new RobotContainer();
+
+
     vision = m_robotContainer.vision;
+
     
     
     //swerveDrive = new SwerveDrive();
@@ -76,6 +76,7 @@ public class Robot extends TimedRobot {
 
     
     vision.addVisionMeasurement();
+
 
     // Update the odometry of the swerve drive using the wheel encoders and gyro.
     
