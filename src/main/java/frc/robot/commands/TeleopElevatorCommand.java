@@ -11,14 +11,16 @@ public class TeleopElevatorCommand extends Command{
     private final Elevator elevator;
     private final BooleanSupplier bButton;
     private final BooleanSupplier aButton;
-    private final PidController pidController;
+    private final BooleanSupplier xButton;
+    private final BooleanSupplier yButton;
 
-    public TeleopElevatorCommand(Elevator elevator, BooleanSupplier aButton, BooleanSupplier bButton) {
+    public TeleopElevatorCommand(Elevator elevator, BooleanSupplier aButton, BooleanSupplier bButton, BooleanSupplier xButton, BooleanSupplier yButton) {
         addRequirements(elevator);
         this.elevator = elevator;
         this.aButton = aButton;
         this.bButton = bButton;
-        this.pidController = elevator.pidController;
+        this.xButton = xButton;
+        this.yButton = yButton;
 
         
 
@@ -29,15 +31,20 @@ public class TeleopElevatorCommand extends Command{
 
         boolean abutton = this.aButton.getAsBoolean();
         boolean bbutton = this.bButton.getAsBoolean();
+        boolean xbutton = this.xButton.getAsBoolean();
+        boolean ybutton = this.yButton.getAsBoolean();
 
         if(abutton) {
-            pidController.setTargetPoint(20);
+            elevator.setTarget(0);
         } else if(bbutton) {
-            pidController.setTargetPoint(30);
+            elevator.setTarget(10);
+        } else if(xbutton) {
+            elevator.setTarget(20);
+        } else if(ybutton) {
+            elevator.setTarget(30);
         }
 
-        pidController.update();
+        elevator.update();
 
-        elevator.setMotors(pidController.GetForce());
     }
 }

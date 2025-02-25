@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -111,7 +113,24 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     configureCommands();
+
+    
+    NamedCommands.registerCommand("ElevatorL1", Elevator.GetElevatorCommand(elevator, 0));
+    NamedCommands.registerCommand("ElevatorL2", Elevator.GetElevatorCommand(elevator, 10));
+    NamedCommands.registerCommand("ElevatorL3", Elevator.GetElevatorCommand(elevator, 20));
+    NamedCommands.registerCommand("ElevatorL4", Elevator.GetElevatorCommand(elevator, 30));
+
+    NamedCommands.registerCommand("CoralIn", Coral.GetCoralCommand(coral, 1, 1));
+    NamedCommands.registerCommand("CoralOut", Coral.GetCoralCommand(coral, -1, 1));
+
+    NamedCommands.registerCommand("AlgaeIntakeIn", AlgaeIntake.GetAlgaeIntakeCommand(algaeIntake, 1, 1));
+    NamedCommands.registerCommand("AlgaeIntakeOut", AlgaeIntake.GetAlgaeIntakeCommand(algaeIntake, -1, 1));
+
+    NamedCommands.registerCommand("AlgaePivotUp", AlgaePivot.GetAlgaePivotCommand(algaePivot, 0));
+    NamedCommands.registerCommand("AlgaePivotDown", AlgaePivot.GetAlgaePivotCommand(algaePivot, 10));
   }
+
+  
 
   private void configureCommands() {
 
@@ -144,9 +163,12 @@ public class RobotContainer {
     elevator.setDefaultCommand(new TeleopElevatorCommand(
             elevator,
             () -> MechDriver.getAButtonPressed(),
-            () -> MechDriver.getBButtonPressed()
-        )
+            () -> MechDriver.getBButtonPressed(),
+            () -> MechDriver.getXButtonPressed(),
+            () -> MechDriver.getYButtonPressed()
+          )
       );
+    
 
     coral.setDefaultCommand(new TeleopCoralCommand(
         coral,

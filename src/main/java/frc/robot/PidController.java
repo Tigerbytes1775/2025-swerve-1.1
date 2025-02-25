@@ -22,6 +22,9 @@ public class PidController {
     private final DoubleSupplier motorEncoder;
     private final DoubleSupplier motorVelocity;
 
+    private final double restingError = 0.1;
+    private final double restingVelocity = 0.01;
+
     public PidController(double p, double i, double d, SparkMax motor) {
 
         this.p = p;
@@ -62,5 +65,9 @@ public class PidController {
 
         double force = p * error + i * integral + d * currentVelocity;
         return force;
+    }
+
+    public boolean IsAtTarget() {
+        return error < restingError && currentVelocity < restingVelocity;
     }
 }
