@@ -63,7 +63,7 @@ public class RobotContainer {
   // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveSubsystem drivebase;
   private final SwerveDrive swerveDrive;
-  private final Vision vision;
+  public final Vision vision;
   private final Elevator elevator;
   private final Coral coral;
   private final AlgaeIntake algaeIntake;
@@ -102,7 +102,7 @@ public class RobotContainer {
     
     this.vision = new Vision(swerveDrive);
 
-    this.visionCommand  = new VisionCommand(vision);
+    visionCommand = new VisionCommand(vision);
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -123,6 +123,11 @@ public class RobotContainer {
       )
     );
 
+<<<<<<< HEAD
+=======
+    
+    vision.setDefaultCommand(visionCommand);
+>>>>>>> f5bf81d3fc68c9ec373898dcebcc3f8bc47eb6d7
     
     vision.setDefaultCommand(visionCommand);
 

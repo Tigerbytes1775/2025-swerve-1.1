@@ -11,7 +11,7 @@ public class VisionCommand extends Command {
     public VisionCommand(Vision vision) {
         addRequirements(vision);
         this.vision = vision;
-        SmartDashboard.putBoolean("Vision Runs", false);
+        //SmartDashboard.putBoolean("Vision Runs", true);
     }
 
     
@@ -22,12 +22,19 @@ public class VisionCommand extends Command {
         vision.addVisionMeasurement();
     }
 
+<<<<<<< HEAD
     @Override
     public boolean runsWhenDisabled() {
         return true;
     }
 
     
+=======
+    @Override 
+    public boolean runsWhenDisabled() {
+        return true;
+    }
+>>>>>>> f5bf81d3fc68c9ec373898dcebcc3f8bc47eb6d7
         
           
 }
