@@ -1,8 +1,11 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkSim;
 
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,23 +18,30 @@ public class Elevator extends SubsystemBase {
     
     private final SparkMax elevatorMotor;
 
-    private final double elevatorSpeed = 0.0001;
+    private final SparkSim elevatorMotorSim;
+
+    private final double elevatorSpeed = 1;
 
     public final PidController pidController;
 
-    
+    private final DCMotor elevatorMotorDC = new DCMotor(elevatorSpeed, elevatorSpeed, elevatorSpeed, elevatorSpeed, elevatorSpeed, 1);
 
 
     
     public Elevator() {
         elevatorMotor  = new SparkMax(5, SparkLowLevel.MotorType.kBrushless);
-        pidController = new PidController(0, 0.1, 0, elevatorMotor);
+        
+        elevatorMotorSim = new SparkSim(elevatorMotor, elevatorMotorDC);
+
+        pidController = new PidController(0.02, 0, 0, elevatorMotorSim);
+        elevatorMotorSim.enable();
     }
 
     public void setMotors(double percent) {
         
-        elevatorMotor.set(percent * elevatorSpeed);
-
+        elevatorMotorSim.setAppliedOutput(percent * elevatorSpeed);
+        
+        SmartDashboard.putNumber("Elevator Motor Pos", elevatorMotorSim.getPosition());
         SmartDashboard.putNumber("Elevator Power(%)", percent * elevatorSpeed);
 
         if(percent == 0) {
@@ -49,8 +59,10 @@ public class Elevator extends SubsystemBase {
 
     public void update() {
         pidController.update();
+
         setMotors(pidController.GetForce());
-        
+
+
     }
 
     public static Command GetElevatorCommand(Elevator elevator, double target) {
