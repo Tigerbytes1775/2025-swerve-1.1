@@ -7,13 +7,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "topToFeed"
+            "pathName": "Top to reef"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Elevator L1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CoralOut"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Reef to Feeder"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 3.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CoralIn"
           }
         },
         {
@@ -25,13 +49,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Elevator L1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Reef to Feeder"
+            "name": "CoralOut"
           }
         }
       ]

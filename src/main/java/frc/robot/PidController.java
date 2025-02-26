@@ -1,5 +1,6 @@
 package frc.robot;
 
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.spark.SparkMax;
@@ -24,6 +25,8 @@ public class PidController {
 
     private final double restingError = 0.1;
     private final double restingVelocity = 0.01;
+
+    private boolean flipD = false;
 
     public PidController(double p, double i, double d, SparkMax motor) {
 
@@ -59,11 +62,14 @@ public class PidController {
         error = targetPoint - currentPoint;
 
         integral += error / 50;
+
+        flipD = error > 0;
+
     }
     
     public double GetForce() {
 
-        double force = p * error + i * integral + d * currentVelocity;
+        double force = p * error + i * integral + d * currentVelocity * (flipD ? -1 : 1);
         return force;
     }
 

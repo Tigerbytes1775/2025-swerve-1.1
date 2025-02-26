@@ -13,17 +13,20 @@ import frc.robot.PidController;
 
 public class Elevator extends SubsystemBase {
     
-    private final SparkMax elevatorMotor = new SparkMax(5, SparkLowLevel.MotorType.kBrushless);
+    private final SparkMax elevatorMotor;
 
     private final double elevatorSpeed = 0.0001;
 
-    public final PidController pidController = new PidController(0, 0.1, 0, elevatorMotor);
+    public final PidController pidController;
 
     
 
 
     
-    public Elevator() {}
+    public Elevator() {
+        elevatorMotor  = new SparkMax(5, SparkLowLevel.MotorType.kBrushless);
+        pidController = new PidController(0, 0.1, 0, elevatorMotor);
+    }
 
     public void setMotors(double percent) {
         
@@ -38,6 +41,7 @@ public class Elevator extends SubsystemBase {
 
     public void setTarget(double target) {
         pidController.setTargetPoint(target);
+        
     }
 
     
@@ -46,6 +50,7 @@ public class Elevator extends SubsystemBase {
     public void update() {
         pidController.update();
         setMotors(pidController.GetForce());
+        
     }
 
     public static Command GetElevatorCommand(Elevator elevator, double target) {

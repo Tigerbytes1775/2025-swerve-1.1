@@ -10,14 +10,17 @@ import frc.robot.PidController;
 
 public class AlgaePivot extends SubsystemBase {
     
-    private final SparkMax algaeMotor = new SparkMax(12, SparkLowLevel.MotorType.kBrushless);
+    private final SparkMax algaeMotor;
 
     private final double algeaStrength = 1;
 
-    public final PidController pidController = new PidController(0,0.1, 0, algaeMotor);
+    public final PidController pidController;
 
 
-    public AlgaePivot() {}
+    public AlgaePivot() {
+        algaeMotor = new SparkMax(12, SparkLowLevel.MotorType.kBrushless);
+        pidController = new PidController(0, 0.1, 0, algaeMotor);
+    }
 
     public void setMotors(double percent) {
         double power = percent * algeaStrength;
@@ -36,7 +39,10 @@ public class AlgaePivot extends SubsystemBase {
 
     public void update() {
         pidController.update();
+        
         setMotors(pidController.GetForce());
+        
+        
     }
 
     public static Command GetAlgaePivotCommand(AlgaePivot algaePivot, double target) {

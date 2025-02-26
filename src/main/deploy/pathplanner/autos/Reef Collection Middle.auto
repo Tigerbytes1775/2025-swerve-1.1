@@ -7,19 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "topToFeed"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "feeder to reef"
+            "pathName": "Middle to Reef"
           }
         },
         {
@@ -29,9 +17,39 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "CoralOut"
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Reef to Feeder"
+            "pathName": "Reef to Feeder 2"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CoralIn"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Feeder to Reef 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CoralOut"
           }
         }
       ]
