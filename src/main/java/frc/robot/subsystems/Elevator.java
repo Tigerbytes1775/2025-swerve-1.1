@@ -14,11 +14,10 @@ public class Elevator extends SubsystemBase {
     
     private final SparkFlex elevatorMotor;
 
-    private final double elevatorSpeed = 0.0001;
+    private final double elevatorSpeed = 1;
 
-    public final PidController pidController;
+    private final PidController pidController;
 
-    
 
 
     
@@ -30,6 +29,7 @@ public class Elevator extends SubsystemBase {
     public void setMotors(double percent) {
         
         elevatorMotor.set(percent * elevatorSpeed);
+        
 
         SmartDashboard.putNumber("Elevator Power(%)", percent * elevatorSpeed);
 
@@ -48,8 +48,10 @@ public class Elevator extends SubsystemBase {
 
     public void update() {
         pidController.update();
+
         setMotors(pidController.GetForce());
-        
+
+
     }
 
     public static Command GetElevatorCommand(Elevator elevator, double target) {

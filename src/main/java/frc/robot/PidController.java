@@ -4,7 +4,11 @@ import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkSim;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkFlex;
 
 public class PidController {
@@ -22,29 +26,24 @@ public class PidController {
 
     private final DoubleSupplier motorEncoder;
     private final DoubleSupplier motorVelocity;
+ 
+
+ 
 
     private final double restingError = 0.1;
     private final double restingVelocity = 0.01;
 
     private boolean flipD = false;
 
-    public PidController(double p, double i, double d, SparkMax motor) {
+    public PidController(double p, double i, double d, SparkSim motor) {
 
         this.p = p;
         this.i = i;
         this.d = d;
         
-        this.motorEncoder = () -> motor.getAbsoluteEncoder().getPosition();
-        this.motorVelocity = () -> motor.getAbsoluteEncoder().getVelocity();
-    }
+        this.motorEncoder = () -> motor.getAbsoluteEncoderSim().getPosition();
+        this.motorVelocity = () -> motor.getAbsoluteEncoderSim().getVelocity();
 
-    public PidController(double p, double i, double d, SparkFlex motor) {
-        this.p = p;
-        this.i = i;
-        this.d = d;
-
-        this.motorEncoder = () -> motor.getAbsoluteEncoder().getPosition();
-        this.motorVelocity = () -> motor.getAbsoluteEncoder().getVelocity();
     }
 
     
@@ -64,6 +63,9 @@ public class PidController {
         integral += error / 50;
 
         flipD = error > 0;
+
+        
+        
 
     }
     

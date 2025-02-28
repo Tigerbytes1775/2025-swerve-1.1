@@ -14,7 +14,7 @@ public class AlgaePivot extends SubsystemBase {
 
     private final double algeaStrength = 1;
 
-    public final PidController pidController;
+    private final PidController pidController;
 
 
     public AlgaePivot() {
@@ -34,15 +34,11 @@ public class AlgaePivot extends SubsystemBase {
     }
 
     public void setTarget(double target) {
-        pidController.setTargetPoint(target);
+        //pidController.setTargetPoint(target);
     }
 
     public void update() {
-        pidController.update();
-        
-        setMotors(pidController.GetForce());
-        
-        
+        //pidController.execute();
     }
 
     public static Command GetAlgaePivotCommand(AlgaePivot algaePivot, double target) {
@@ -51,7 +47,7 @@ public class AlgaePivot extends SubsystemBase {
 
             @Override
             public void initialize() {
-                algaePivot.pidController.setTargetPoint(target);
+                //algaePivot.pidController.setTargetPoint(target);
             }
 
             @Override
@@ -61,7 +57,7 @@ public class AlgaePivot extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
-                return algaePivot.pidController.IsAtTarget();
+                return true;//algaePivot.pidController.IsAtTarget();
             }
         };
     }
