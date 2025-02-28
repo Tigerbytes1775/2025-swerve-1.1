@@ -1,9 +1,8 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.SparkMax;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,7 +12,7 @@ import frc.robot.PidController;
 
 public class Elevator extends SubsystemBase {
     
-    private final SparkMax elevatorMotor;
+    private final SparkFlex elevatorMotor;
 
     private final double elevatorSpeed = 0.0001;
 
@@ -24,7 +23,7 @@ public class Elevator extends SubsystemBase {
 
     
     public Elevator() {
-        elevatorMotor  = new SparkMax(5, SparkLowLevel.MotorType.kBrushless);
+        elevatorMotor  = new SparkFlex(5, SparkLowLevel.MotorType.kBrushless);
         pidController = new PidController(0, 0.1, 0, elevatorMotor);
     }
 

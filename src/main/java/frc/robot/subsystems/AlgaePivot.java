@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -10,7 +10,7 @@ import frc.robot.PidController;
 
 public class AlgaePivot extends SubsystemBase {
     
-    private final SparkMax algaeMotor;
+    private final SparkFlex algaeMotor;
 
     private final double algeaStrength = 1;
 
@@ -18,7 +18,7 @@ public class AlgaePivot extends SubsystemBase {
 
 
     public AlgaePivot() {
-        algaeMotor = new SparkMax(12, SparkLowLevel.MotorType.kBrushless);
+        algaeMotor = new SparkFlex(12, SparkLowLevel.MotorType.kBrushless);
         pidController = new PidController(0, 0.1, 0, algaeMotor);
     }
 
