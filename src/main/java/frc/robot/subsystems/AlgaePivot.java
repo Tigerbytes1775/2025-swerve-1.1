@@ -18,7 +18,7 @@ public class AlgaePivot extends SubsystemBase {
 
 
     public AlgaePivot() {
-        algaeMotor = new SparkFlex(12, SparkLowLevel.MotorType.kBrushless);
+        algaeMotor = new SparkFlex(30, SparkLowLevel.MotorType.kBrushless);
         pidController = new PidController(0, 0.1, 0, algaeMotor);
     }
 

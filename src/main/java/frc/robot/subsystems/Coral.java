@@ -13,8 +13,8 @@ public class Coral extends SubsystemBase {
     
     private final double coralPower = 1;
 
-    private final SparkFlex coralMotorIn = new SparkFlex(7, SparkLowLevel.MotorType.kBrushless);
-    private final SparkMax coralMotorOut = new SparkMax(8, SparkLowLevel.MotorType.kBrushless);
+    private final SparkFlex coralMotorIn = new SparkFlex(28, SparkLowLevel.MotorType.kBrushless);
+    private final SparkMax coralMotorOut = new SparkMax(29, SparkLowLevel.MotorType.kBrushless);
 
     public Coral() {}
 

@@ -22,7 +22,7 @@ public class Elevator extends SubsystemBase {
 
     
     public Elevator() {
-        elevatorMotor  = new SparkFlex(5, SparkLowLevel.MotorType.kBrushless);
+        elevatorMotor  = new SparkFlex(32, SparkLowLevel.MotorType.kBrushless);
         pidController = new PidController(0, 0.1, 0, elevatorMotor);
     }
 

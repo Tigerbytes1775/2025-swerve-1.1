@@ -13,7 +13,7 @@ import frc.robot.PidController;
 public class AlgaeIntake extends SubsystemBase {
 
     
-    private final SparkMax algaeMotor = new SparkMax(11, SparkLowLevel.MotorType.kBrushless);
+    private final SparkMax algaeMotor = new SparkMax(31, SparkLowLevel.MotorType.kBrushless);
 
     double algeaStrength = 1;
     
