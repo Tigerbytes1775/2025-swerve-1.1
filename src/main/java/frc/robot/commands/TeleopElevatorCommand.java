@@ -37,11 +37,11 @@ public class TeleopElevatorCommand extends Command{
         if(abutton) {
             elevator.setTarget(0);
         } else if(bbutton) {
-            elevator.setTarget(10);
+            elevator.setTarget(1);
         } else if(xbutton) {
-            elevator.setTarget(20);
+            elevator.setTarget(2);
         } else if(ybutton) {
-            elevator.setTarget(30);
+            elevator.setTarget(3);
         }
 
         elevator.update();

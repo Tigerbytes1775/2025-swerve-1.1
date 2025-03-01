@@ -38,7 +38,8 @@ public class AlgaePivot extends SubsystemBase {
     }
 
     public void update() {
-        //pidController.execute();
+        pidController.update();
+        //setMotors(pidController.GetForce());
     }
 
     public static Command GetAlgaePivotCommand(AlgaePivot algaePivot, double target) {
@@ -47,7 +48,7 @@ public class AlgaePivot extends SubsystemBase {
 
             @Override
             public void initialize() {
-                //algaePivot.pidController.setTargetPoint(target);
+                algaePivot.pidController.setTargetPoint(target);
             }
 
             @Override

@@ -22,8 +22,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 //import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -112,6 +114,7 @@ public class SwerveSubsystem extends SubsystemBase {
   public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity) {
     return run(() -> {
       swerveDrive.driveFieldOriented(velocity.get());
+      
     });
   }
 
@@ -186,6 +189,21 @@ public class SwerveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d initialHolonomicPose) {
     swerveDrive.resetOdometry(initialHolonomicPose);
   }
+
+  public void zeroGyro () { 
+
+        Translation2d translation = this.getPose().getTranslation();
+        Rotation2d rotation = new Rotation2d();
+        SmartDashboard.putBoolean("Gyro Reset", true);
+        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
+
+            Rotation2d allianceOriented = Rotation2d.fromDegrees(180);
+            rotation = rotation.plus(allianceOriented); 
+        }
+
+        this.resetOdometry(new Pose2d(translation, rotation));
+    }
+
 
   public ChassisSpeeds getRobotVelocity() {
     return swerveDrive.getRobotVelocity();

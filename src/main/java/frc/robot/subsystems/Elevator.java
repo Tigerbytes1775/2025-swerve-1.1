@@ -49,7 +49,7 @@ public class Elevator extends SubsystemBase {
     public void update() {
         pidController.update();
 
-        setMotors(pidController.GetForce());
+        //setMotors(pidController.GetForce());
 
 
     }

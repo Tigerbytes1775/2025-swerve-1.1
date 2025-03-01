@@ -12,20 +12,20 @@
         "y": 6.690672024295439
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "blue, feeder, north"
     },
     {
       "anchor": {
-        "x": 4.9822500000000005,
+        "x": 5.021,
         "y": 5.26325
       },
       "prevControl": {
-        "x": 4.96275,
-        "y": 6.12125
+        "x": 5.5672500000000005,
+        "y": 5.789750000000001
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Reef, top, blue, right(1)"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.0546040990772
+    "rotation": -121.42956561483854
   },
   "reversed": false,
   "folder": null,
