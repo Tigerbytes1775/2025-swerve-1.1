@@ -192,17 +192,18 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void zeroGyro () { 
 
-        Translation2d translation = this.getPose().getTranslation();
-        Rotation2d rotation = new Rotation2d();
-        SmartDashboard.putBoolean("Gyro Reset", true);
-        if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
+      Translation2d translation = this.getPose().getTranslation();
+      Rotation2d rotation = new Rotation2d();
+      SmartDashboard.putBoolean("Gyro Reset", true);
+      if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
 
-            Rotation2d allianceOriented = Rotation2d.fromDegrees(180);
-            rotation = rotation.plus(allianceOriented); 
-        }
+          Rotation2d allianceOriented = Rotation2d.fromDegrees(180);
+          rotation = rotation.plus(allianceOriented); 
+      }
 
-        this.resetOdometry(new Pose2d(translation, rotation));
-    }
+      this.resetOdometry(new Pose2d(translation, rotation));
+      System.out.println("Gyro Reset");
+  }
 
 
   public ChassisSpeeds getRobotVelocity() {

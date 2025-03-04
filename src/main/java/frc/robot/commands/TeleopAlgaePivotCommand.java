@@ -22,7 +22,7 @@ public class TeleopAlgaePivotCommand extends Command {
         double leftY = this.leftY.getAsDouble();
 
         if(leftY >= 0.5) {
-            algaePivot.setTarget(1);
+            algaePivot.setTarget(10);
         } else if(leftY <= -0.5) {
             algaePivot.setTarget(0);
         }

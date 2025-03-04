@@ -19,7 +19,7 @@ public class AlgaePivot extends SubsystemBase {
 
     public AlgaePivot() {
         algaeMotor = new SparkFlex(30, SparkLowLevel.MotorType.kBrushless);
-        pidController = new PidController(0, 0.1, 0, algaeMotor);
+        pidController = new PidController(0.01, 0, 0, algaeMotor);
     }
 
     public void setMotors(double percent) {
@@ -34,12 +34,12 @@ public class AlgaePivot extends SubsystemBase {
     }
 
     public void setTarget(double target) {
-        //pidController.setTargetPoint(target);
+        pidController.setTargetPoint(target);
     }
 
     public void update() {
         pidController.update();
-        //setMotors(pidController.GetForce());
+        setMotors(pidController.GetForce());
     }
 
     public static Command GetAlgaePivotCommand(AlgaePivot algaePivot, double target) {
@@ -58,7 +58,7 @@ public class AlgaePivot extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
-                return true;//algaePivot.pidController.IsAtTarget();
+                return algaePivot.pidController.IsAtTarget();
             }
         };
     }

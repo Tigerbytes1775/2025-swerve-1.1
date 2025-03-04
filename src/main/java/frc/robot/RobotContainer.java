@@ -4,10 +4,12 @@
 
 package frc.robot;
 
-import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+//import edu.wpi.first.wpilibj2.command.CommandScheduler;
+//import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import com.pathplanner.lib.auto.NamedCommands;
@@ -20,15 +22,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-//import edu.wpi.first.wpilibj2.command.CommandScheduler;
-//import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.event.BooleanEvent;
-import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.Vision;
+import frc.robot.commands.SwerveTeleopCommand;
 import frc.robot.commands.TeleopAlgaeIntakeCommand;
 import frc.robot.commands.TeleopAlgaePivotCommand;
 import frc.robot.commands.TeleopCoralCommand;
@@ -41,6 +38,7 @@ import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.PathRunner;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Vision;
 import swervelib.SwerveDrive;
 //import java.io.File;
 import swervelib.SwerveInputStream;
@@ -137,6 +135,14 @@ public class RobotContainer {
   private void configureCommands() {
 
     //new BooleanEvent(new EventLoop(), () -> m_driverController.getPOV() != -1).ifHigh(() -> System.out.println("DPAD PRESSED"));
+    
+    //this.m_driverController.x().onTrue(new InstantCommand(this.swerveDrive::zeroGyro, this.drivebase));
+    
+    drivebase.setDefaultCommand(new SwerveTeleopCommand(
+      drivebase,
+      swerveDrive,
+      () -> m_driverController.getPOV() != -1
+    ));
 
 
     pathRunner.setDefaultCommand(new TeleopPathCommand(
@@ -220,7 +226,7 @@ public class RobotContainer {
     Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
 
     Command DriveFieldOrientedAngularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-      drivebase.setDefaultCommand(DriveFieldOrientedAngularVelocity);
+      //drivebase.setDefaultCommand(DriveFieldOrientedAngularVelocity);
 
     
   }
