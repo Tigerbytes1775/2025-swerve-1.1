@@ -39,6 +39,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import swervelib.SwerveDrive;
 import edu.wpi.first.math.geometry.Translation3d;
+
+import java.util.ArrayList;
 //import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,26 +57,32 @@ import edu.wpi.first.math.geometry.Rotation3d;
 public class Vision extends SubsystemBase {
 
     private final Transform3d robotToCam1 = new Transform3d(
-        new Translation3d(0.15, 0.15, 0.15), 
+        new Translation3d(0.1905, 0.1524, 0.2032), 
         new Rotation3d(0, 0, 0)
+    );
+
+    private final Transform3d robotToCam2 = new Transform3d(
+        new Translation3d(-0.22225, -0.2794, 0.2286), 
+        new Rotation3d(0, 0, 180)
     );
 
 
     private final PhotonCamera cam1 = new PhotonCamera("cam1");
-    //private final PhotonCamera cam2 = new PhotonCamera("cam2");
+    private final PhotonCamera cam2 = new PhotonCamera("cam2");
     private final PhotonPoseEstimator photonEstimator1 =
        new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam1);
-    //private final PhotonPoseEstimator photonEstimator2 =
-    //   new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam1);;
+       
+    private final PhotonPoseEstimator photonEstimator2 =
+       new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam2);;
 
     private final PhotonCamera[] cams = {
-       cam1
-        //cam2
+        cam1,
+        cam2
     };
 
     private final PhotonPoseEstimator[] photonEstimators = {
-       photonEstimator1
-       //photonEstimator2
+        photonEstimator1,
+        photonEstimator2
     };
 
     private Matrix<N3, N1> curStdDevs;
@@ -130,41 +138,43 @@ public class Vision extends SubsystemBase {
     public void addVisionMeasurement() {
 
         swerveDrive.updateOdometry();
-        
-        var visionEst = GetVisionEstimate();
-        visionEst.ifPresent(
-            est -> {
-            // Change our trust in the measurement based on the tags we can see
-            var estStdDevs = getEstimationStdDevs();
+        for (int i = 0; i < cams.length; i++) {
+            var visionEst = GetVisionEstimate()[i];
+            visionEst.ifPresent(
+                est -> {
+                    // Change our trust in the measurement based on the tags we can see
+                    var estStdDevs = getEstimationStdDevs();
 
-            Pose2d estPose = est.estimatedPose.toPose2d();
-            double[] poseEstArray = {estPose.getMeasureX().magnitude(), estPose.getMeasureY().magnitude()};
-          
-            swerveDrive.addVisionMeasurement(
-                est.estimatedPose.toPose2d(), 
-                est.timestampSeconds, 
-                estStdDevs
+                    Pose2d estPose = est.estimatedPose.toPose2d();
+                    double[] poseEstArray = {estPose.getMeasureX().magnitude(), estPose.getMeasureY().magnitude()};
+            
+                    swerveDrive.addVisionMeasurement(
+                        est.estimatedPose.toPose2d(), 
+                        est.timestampSeconds, 
+                        estStdDevs
+                    );
+
+                    SmartDashboard.putNumberArray("Robot Pose Est:", poseEstArray);
+                    //est.timestampSeconds, estStdDevs;
+                }
             );
-
-            SmartDashboard.putNumberArray("Robot Pose Est:", poseEstArray);
-            //est.timestampSeconds, estStdDevs;
-      }
-    );
+        }
+        
 
     }
 
-    public Optional<EstimatedRobotPose> GetVisionEstimate() {
-       //List<Optional<EstimatedRobotPose>> visionEsts = new ArrayList<>();
+    public Optional<EstimatedRobotPose>[] GetVisionEstimate() {
+       List<Optional<EstimatedRobotPose>> visionEsts = new ArrayList<>();
        
        Optional<EstimatedRobotPose> visionEst = Optional.empty();
-       //for(int i = 0; i < cams.length; i++) {
+       for(int i = 0; i < cams.length; i++) {
 
-           for (var change : cam1.getAllUnreadResults()) {
+           for (var change : cams[i].getAllUnreadResults()) {
 
-               visionEst = photonEstimator1.update(change);
+               visionEst = photonEstimators[1].update(change);
                updateEstimationStdDevs(visionEst, change.getTargets());
                
-               //visionEsts.add(visionEst);
+               visionEsts.add(visionEst);
 
                if (Robot.isSimulation()) {
                    visionEst.ifPresentOrElse(
@@ -180,8 +190,10 @@ public class Vision extends SubsystemBase {
 
            }
        //}
-       return visionEst;
-       //return  (Optional<EstimatedRobotPose>[])visionEsts.toArray();
+       //return visionEst;
+        
+        }
+        return  (Optional<EstimatedRobotPose>[])visionEsts.toArray();
     }
 
     /**
