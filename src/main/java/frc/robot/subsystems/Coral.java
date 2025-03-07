@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Coral extends SubsystemBase {
     
-    private final double coralPowerOut = 1;
-    private final double coralPowerIn = 0.05;
+    private final double coralPowerOut = 0.5;
+    private final double coralPowerIn = 0.1;
 
     private final SparkFlex coralMotorIn = new SparkFlex(28, SparkLowLevel.MotorType.kBrushless);
     private final SparkMax coralMotorOut = new SparkMax(29, SparkLowLevel.MotorType.kBrushless);
@@ -26,11 +26,17 @@ public class Coral extends SubsystemBase {
         
 
         SmartDashboard.putNumber("Coral Power(%)", percent);
+
+
         if(percent < 0) {
-            coralMotorIn.set(-percent * coralPowerIn);
+            coralMotorIn.set(coralPowerIn);
+        } else if(percent > 0) {
+            coralMotorOut.set(-coralPowerOut);
         } else {
-            coralMotorOut.set(-percent * coralPowerOut);
+            coralMotorIn.set(0);
+            coralMotorOut.set(0);
         }
+        
     }
 
     public static Command GetCoralCommand(Coral coral, double percent, double commandTime) {

@@ -12,21 +12,30 @@ public class AlgaePivot extends SubsystemBase {
     
     private final SparkFlex algaeMotor;
 
-    private final double algeaStrength = 1;
+    private final double algeaStrengthUp = 0.15;
+    private final double algeaStrengthDown = 0.1;
 
     private final PidController pidController;
 
 
     public AlgaePivot() {
         algaeMotor = new SparkFlex(30, SparkLowLevel.MotorType.kBrushless);
-        pidController = new PidController(0.01, 0, 0, algaeMotor);
+        pidController = new PidController(SmartDashboard.getNumber("Pivot p:", 0.1),
+        SmartDashboard.getNumber("Pivot i:", 0.1), 0, algaeMotor);
     }
 
     public void setMotors(double percent) {
-        double power = percent * algeaStrength;
+        double power = 0;
+        if(percent < 0 )  {
+            power = -algeaStrengthDown;
+        } else if (percent > 0) {
+            power = algeaStrengthUp;
+        }
+
         algaeMotor.set(power);
 
         SmartDashboard.putNumber("Algae Pivot Power(%)", power);
+        SmartDashboard.putNumber("Algae Pivot Pos", algaeMotor.getAbsoluteEncoder().getPosition());
 
         if(percent == 0){
             algaeMotor.stopMotor();

@@ -14,7 +14,7 @@ public class Elevator extends SubsystemBase {
     
     private final SparkFlex elevatorMotor;
 
-    private final double elevatorSpeed = 1;
+    private final double elevatorSpeed = 0.2;
 
     private final PidController pidController;
 
@@ -23,7 +23,7 @@ public class Elevator extends SubsystemBase {
     
     public Elevator() {
         elevatorMotor  = new SparkFlex(32, SparkLowLevel.MotorType.kBrushless);
-        pidController = new PidController(0, 0.1, 0, elevatorMotor);
+        pidController = new PidController(0.3, 0.1, 0, elevatorMotor);
     }
 
     public void setMotors(double percent) {
@@ -32,6 +32,7 @@ public class Elevator extends SubsystemBase {
         
 
         SmartDashboard.putNumber("Elevator Power(%)", percent * elevatorSpeed);
+        SmartDashboard.putNumber("Elevator Pos", elevatorMotor.getAbsoluteEncoder().getPosition());
 
         if(percent == 0) {
             elevatorMotor.stopMotor();
@@ -39,7 +40,7 @@ public class Elevator extends SubsystemBase {
     }
 
     public void setTarget(double target) {
-        pidController.setTargetPoint(target);
+        //pidController.setTargetPoint(target);
         
     }
 
@@ -47,7 +48,7 @@ public class Elevator extends SubsystemBase {
     
 
     public void update() {
-        pidController.update();
+       // pidController.update();
 
         //setMotors(pidController.GetForce());
 

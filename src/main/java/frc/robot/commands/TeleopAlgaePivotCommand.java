@@ -20,13 +20,16 @@ public class TeleopAlgaePivotCommand extends Command {
     public void execute() {
 
         double leftY = this.leftY.getAsDouble();
-
+        double power = 0;
         if(leftY >= 0.5) {
-            algaePivot.setTarget(10);
+            //algaePivot.setTarget(0);
+            power = -leftY;
         } else if(leftY <= -0.5) {
-            algaePivot.setTarget(0);
+            power = -leftY;
+            //algaePivot.setTarget(1);
         }
+        algaePivot.setMotors(power);
 
-        algaePivot.update();
+        //algaePivot.update();
     }
 }

@@ -138,11 +138,27 @@ public class RobotContainer {
     
     //this.m_driverController.x().onTrue(new InstantCommand(this.swerveDrive::zeroGyro, this.drivebase));
     
+    SwerveInputStream driveAngularVelocity = SwerveInputStream.of(
+      drivebase.getSwerveDrive(),
+      () -> m_driverController.getLeftY() * -1,
+      () -> m_driverController.getLeftX() * -1)
+      .withControllerRotationAxis(m_driverController::getRightX)
+      .deadband(OperatorConstants.DEADBAND)
+      .scaleTranslation(0.8)
+      .allianceRelativeControl(true);
+
+    SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
+      .withControllerHeadingAxis(m_driverController::getRightX,
+          m_driverController::getRightY)
+      .headingWhile(false);
+    
     drivebase.setDefaultCommand(new SwerveTeleopCommand(
       drivebase,
       swerveDrive,
+      driveAngularVelocity,
+      driveDirectAngle,
       () -> m_driverController.getPOV() != -1
-    ));
+    )); 
 
 
     pathRunner.setDefaultCommand(new TeleopPathCommand(
@@ -174,10 +190,7 @@ public class RobotContainer {
 
     elevator.setDefaultCommand(new TeleopElevatorCommand(
             elevator,
-            () -> MechDriver.getAButtonPressed(),
-            () -> MechDriver.getBButtonPressed(),
-            () -> MechDriver.getXButtonPressed(),
-            () -> MechDriver.getYButtonPressed()
+            () -> MechDriver.getRightY()
           )
       );
     
@@ -226,7 +239,7 @@ public class RobotContainer {
     Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
 
     Command DriveFieldOrientedAngularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-      //drivebase.setDefaultCommand(DriveFieldOrientedAngularVelocity);
+      drivebase.setDefaultCommand(DriveFieldOrientedAngularVelocity);
 
     
   }
