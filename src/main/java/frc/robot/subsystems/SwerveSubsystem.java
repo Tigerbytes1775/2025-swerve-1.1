@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 //YAGSL imports
 import java.io.File;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -111,6 +112,18 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrive.driveFieldOriented(velocity);
   }
 
+  public Command driveFieldOriented(SwerveSubsystem swerveSubsystem, Supplier<ChassisSpeeds> velocity, BooleanSupplier dPadDown) {
+    return run(() -> {
+      swerveDrive.driveFieldOriented(velocity.get());
+      if(dPadDown.getAsBoolean()) {
+        swerveSubsystem.zeroGyro();
+       
+      }
+      
+      
+    });
+  }
+
   public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity) {
     return run(() -> {
       swerveDrive.driveFieldOriented(velocity.get());
@@ -197,8 +210,8 @@ public class SwerveSubsystem extends SubsystemBase {
       SmartDashboard.putBoolean("Gyro Reset", true);
       if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red) {
 
-          Rotation2d allianceOriented = Rotation2d.fromDegrees(180);
-          rotation = rotation.plus(allianceOriented); 
+        Rotation2d allianceOriented = Rotation2d.fromDegrees(180);
+        rotation = rotation.plus(allianceOriented); 
       }
 
       this.resetOdometry(new Pose2d(translation, rotation));

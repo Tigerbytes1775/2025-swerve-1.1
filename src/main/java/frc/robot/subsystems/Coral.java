@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Percent;
+
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
@@ -19,24 +21,17 @@ public class Coral extends SubsystemBase {
 
     public Coral() {}
 
-    public void setMotors(double percent) {
+    public void setInMotor(double percent){
+        double power = percent * coralPowerIn;
+        coralMotorIn.set(power);
+        SmartDashboard.putNumber("Coral Intake Motor(%)", power);
+    }
 
-        
+    public void setOutMotor(double percent){
+        double power = percent * coralPowerOut;
+        coralMotorOut.set(power);
+        SmartDashboard.putNumber("Coral OutMotor(%)", power);
 
-        
-
-        SmartDashboard.putNumber("Coral Power(%)", percent);
-
-
-        if(percent < 0) {
-            coralMotorIn.set(coralPowerIn);
-        } else if(percent > 0) {
-            coralMotorOut.set(-coralPowerOut);
-        } else {
-            coralMotorIn.set(0);
-            coralMotorOut.set(0);
-        }
-        
     }
 
     public static Command GetCoralCommand(Coral coral, double percent, double commandTime) {
@@ -51,8 +46,8 @@ public class Coral extends SubsystemBase {
             }
 
             @Override
-            public void execute() {
-                coral.setMotors(percent);
+                public void execute() {
+               // coral.setMotors(percent);
             }
 
             @Override

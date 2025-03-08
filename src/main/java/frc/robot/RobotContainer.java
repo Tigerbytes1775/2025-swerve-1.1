@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -73,12 +75,12 @@ public class RobotContainer {
   private final AlgaePivot algaePivot;
   private final PathRunner pathRunner; //= new PathRunner();
 
-  public final VisionCommand visionCommand;
+
 
   
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final XboxController m_driverController = new XboxController(
+  private final XboxController driverController = new XboxController(
       OperatorConstants.kDriverControllerPort);
   
   private final XboxController MechDriver;
@@ -105,7 +107,7 @@ public class RobotContainer {
     
     this.vision = new Vision(swerveDrive);
 
-    visionCommand = new VisionCommand(vision);
+    
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -137,68 +139,66 @@ public class RobotContainer {
     //new BooleanEvent(new EventLoop(), () -> m_driverController.getPOV() != -1).ifHigh(() -> System.out.println("DPAD PRESSED"));
     
     //this.m_driverController.x().onTrue(new InstantCommand(this.swerveDrive::zeroGyro, this.drivebase));
+    //DoubleSupplier swerveMultiplier = () -> m_driverController.getLeftBumperButton() ? 0.5 : 1.0;
+    //SwerveInputStream driveAngularVelocity = SwerveInputStream.of(
+    //  drivebase.getSwerveDrive(),
+    //  () -> m_driverController.getLeftY() * -swerveMultiplier.getAsDouble(),
+    //  () -> m_driverController.getLeftX() * -swerveMultiplier.getAsDouble())
+    //  .withControllerRotationAxis(m_driverController::getRightX)
+    //  .deadband(OperatorConstants.DEADBAND)
+    //  .scaleTranslation(0.8)
+    //  .allianceRelativeControl(true);
     
-    SwerveInputStream driveAngularVelocity = SwerveInputStream.of(
-      drivebase.getSwerveDrive(),
-      () -> m_driverController.getLeftY() * -1,
-      () -> m_driverController.getLeftX() * -1)
-      .withControllerRotationAxis(m_driverController::getRightX)
-      .deadband(OperatorConstants.DEADBAND)
-      .scaleTranslation(0.8)
-      .allianceRelativeControl(true);
-
-    SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
-      .withControllerHeadingAxis(m_driverController::getRightX,
-          m_driverController::getRightY)
-      .headingWhile(false);
-    
+    //SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
+    //  .withControllerHeadingAxis(m_driverController::getRightX,
+    //      m_driverController::getRightY)
+    //  .headingWhile(false);
+    //
     //drivebase.setDefaultCommand(new SwerveTeleopCommand(
     //  drivebase,
     //  swerveDrive,
     //  driveAngularVelocity,
-    //  driveDirectAngle,
+    //  //driveDirectAngle,
     //  () -> m_driverController.getPOV() != -1
     //)); 
 
 
     pathRunner.setDefaultCommand(new TeleopPathCommand(
         pathRunner,
-        () -> m_driverController.getAButton(),
-        () -> m_driverController.getBButton(),
-        () -> m_driverController.getXButton(),
-        () -> m_driverController.getYButton()
+        driverController::getAButton,
+        driverController::getBButton,
+        driverController::getXButton,
+        driverController::getYButton
       )
     );
     
-    vision.setDefaultCommand(visionCommand);
-
-    
-
+    //vision.setDefaultCommand(new VisionCommand(vision));
 
     algaePivot.setDefaultCommand(new TeleopAlgaePivotCommand(
         algaePivot,
-        () -> MechDriver.getLeftY()
+        MechDriver::getLeftY
       )
     );
 
     algaeIntake.setDefaultCommand(new TeleopAlgaeIntakeCommand(
         algaeIntake,
-        () -> MechDriver.getRightBumperButton(),
-        () -> MechDriver.getLeftBumperButton() 
+        MechDriver::getRightBumperButton,
+        MechDriver::getLeftBumperButton 
       )
     );
 
     elevator.setDefaultCommand(new TeleopElevatorCommand(
             elevator,
-            () -> MechDriver.getRightY()
+            MechDriver::getRightY
           )
       );
     
 
     coral.setDefaultCommand(new TeleopCoralCommand(
         coral,
-        () -> MechDriver.getLeftTriggerAxis(),
-        () -> MechDriver.getRightTriggerAxis()
+        MechDriver::getLeftTriggerAxis,
+        MechDriver::getRightTriggerAxis,
+        () -> MechDriver.getPOV() != -1
       )
     );
     
@@ -222,25 +222,31 @@ public class RobotContainer {
    */
   private void configureBindings() {
     
+    DoubleSupplier swerveScalar = () -> driverController.getLeftBumperButton() ? 0.5 : 1.0;
     SwerveInputStream driveAngularVelocity = SwerveInputStream.of(
       drivebase.getSwerveDrive(),
-      () -> m_driverController.getLeftY() * -1,
-      () -> m_driverController.getLeftX() * -1)
-      .withControllerRotationAxis(m_driverController::getRightX)
+      () -> driverController.getLeftY() * -swerveScalar.getAsDouble(),
+      () -> driverController.getLeftX() * -swerveScalar.getAsDouble()
+    )
+      .withControllerRotationAxis(() -> driverController.getRightX() * swerveScalar.getAsDouble())
       .deadband(OperatorConstants.DEADBAND)
       .scaleTranslation(0.8)
       .allianceRelativeControl(true);
 
     SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
-      .withControllerHeadingAxis(m_driverController::getRightX,
-          m_driverController::getRightY)
+      .withControllerHeadingAxis(driverController::getRightX,
+          driverController::getRightY)
       .headingWhile(false);
     // affects the things
     Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
 
-    Command DriveFieldOrientedAngularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-      drivebase.setDefaultCommand(DriveFieldOrientedAngularVelocity);
-
+    Command DriveFieldOrientedAngularVelocity = drivebase.driveFieldOriented(
+      drivebase, 
+      driveAngularVelocity, 
+      () -> driverController.getPOV() != -1
+    );
+    drivebase.setDefaultCommand(DriveFieldOrientedAngularVelocity);
+    
     
   }
 
@@ -262,7 +268,5 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 
-  public Command getVisionCommand() {
-    return visionCommand;
-  }
+
 }

@@ -34,8 +34,8 @@ public class PidController {
         this.i = i;
         this.d = d;
         
-        this.motorEncoder = () -> motor.getAbsoluteEncoder().getPosition();
-        this.motorVelocity = () -> motor.getAbsoluteEncoder().getVelocity();
+        this.motorEncoder = () -> motor.getEncoder().getPosition();
+        this.motorVelocity = () -> motor.getEncoder().getVelocity();
 
     }
 

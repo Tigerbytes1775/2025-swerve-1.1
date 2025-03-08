@@ -28,11 +28,11 @@ public class Elevator extends SubsystemBase {
 
     public void setMotors(double percent) {
         
-        elevatorMotor.set(percent * elevatorSpeed);
+        elevatorMotor.set(-percent * elevatorSpeed);
         
 
         SmartDashboard.putNumber("Elevator Power(%)", percent * elevatorSpeed);
-        SmartDashboard.putNumber("Elevator Pos", elevatorMotor.getAbsoluteEncoder().getPosition());
+        SmartDashboard.putNumber("Elevator Pos", elevatorMotor.getEncoder().getPosition());
 
         if(percent == 0) {
             elevatorMotor.stopMotor();

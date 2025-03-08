@@ -4,6 +4,7 @@ import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.SwerveDriveBrake;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -16,17 +17,17 @@ public class SwerveTeleopCommand extends Command {
     private final SwerveSubsystem drivebase;
     private final SwerveDrive swerveDrive;
     private final SwerveInputStream driveAngularVelocity;
-    private final SwerveInputStream driveDirectAngle;
+    //private final SwerveInputStream driveDirectAngle;
 
 
-    public SwerveTeleopCommand(SwerveSubsystem swerveSubsystem, SwerveDrive swerveDrive, SwerveInputStream driveAngularVelocity, SwerveInputStream driveDirectAngle, BooleanSupplier dPad) {
+    public SwerveTeleopCommand(SwerveSubsystem swerveSubsystem, SwerveDrive swerveDrive, SwerveInputStream driveAngularVelocity, BooleanSupplier dPad) {
         addRequirements(swerveSubsystem);
         this.drivebase = swerveSubsystem;
         this.swerveDrive = swerveDrive;
         this.driveAngularVelocity = driveAngularVelocity;
-        this.driveDirectAngle = driveDirectAngle;
+        //this.driveDirectAngle = driveDirectAngle;
         this.dPad = dPad;
-        
+        SmartDashboard.putBoolean("Swerve On", false);
             
         
     }
@@ -40,8 +41,8 @@ public class SwerveTeleopCommand extends Command {
         } 
         //drivebase.driveFieldOriented(drivebase.getRobotVelocity());
         //drivebase.driveFieldOriented(driveDirectAngle);
-        System.out.println("Swerving");
-        drivebase.driveFieldOriented(driveAngularVelocity);
+        SmartDashboard.putBoolean("Swerve On", true);
+        //swerveDrive.driveFieldOriented(driveAngularVelocity.get());
         
     }
     

@@ -22,6 +22,7 @@ public class AlgaePivot extends SubsystemBase {
         algaeMotor = new SparkFlex(30, SparkLowLevel.MotorType.kBrushless);
         pidController = new PidController(SmartDashboard.getNumber("Pivot p:", 0.1),
         SmartDashboard.getNumber("Pivot i:", 0.1), 0, algaeMotor);
+        
     }
 
     public void setMotors(double percent) {
@@ -30,25 +31,25 @@ public class AlgaePivot extends SubsystemBase {
             power = -algeaStrengthDown;
         } else if (percent > 0) {
             power = algeaStrengthUp;
-        }
-
-        algaeMotor.set(power);
+        } 
 
         SmartDashboard.putNumber("Algae Pivot Power(%)", power);
         SmartDashboard.putNumber("Algae Pivot Pos", algaeMotor.getAbsoluteEncoder().getPosition());
 
         if(percent == 0){
             algaeMotor.stopMotor();
+        } else {
+            algaeMotor.set(power);
         }
     }
 
     public void setTarget(double target) {
-        pidController.setTargetPoint(target);
+        //pidController.setTargetPoint(target);
     }
 
     public void update() {
-        pidController.update();
-        setMotors(pidController.GetForce());
+        //pidController.update();
+        //setMotors(pidController.GetForce());
     }
 
     public static Command GetAlgaePivotCommand(AlgaePivot algaePivot, double target) {

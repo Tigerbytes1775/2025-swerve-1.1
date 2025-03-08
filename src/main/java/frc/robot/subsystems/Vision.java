@@ -139,20 +139,21 @@ public class Vision extends SubsystemBase {
 
         swerveDrive.updateOdometry();
 
+       
+
         Optional<EstimatedRobotPose[]> optionVisionEsts = GetVisionEstimate();
         optionVisionEsts.ifPresent(
             ests -> {
-                for (int i = 0; i < ests.length; i++) {
-                    EstimatedRobotPose est = ests[i];
+                for (var est : ests) {
                     
                     // Change our trust in the measurement based on the tags we can see
                     var estStdDevs = getEstimationStdDevs();
 
                     Pose2d estPose = est.estimatedPose.toPose2d();
                     double[] poseEstArray = {estPose.getMeasureX().magnitude(), estPose.getMeasureY().magnitude()};
-            
+                    
                     swerveDrive.addVisionMeasurement(
-                        est.estimatedPose.toPose2d(), 
+                        estPose, 
                         est.timestampSeconds, 
                         estStdDevs
                     );
@@ -171,14 +172,14 @@ public class Vision extends SubsystemBase {
 
     public Optional<EstimatedRobotPose[]> GetVisionEstimate() {
        List<EstimatedRobotPose> visionEsts = new ArrayList<>();
-       Optional<EstimatedRobotPose[]> optionVisionEsts = Optional.empty();
+       //Optional<EstimatedRobotPose[]> optionVisionEsts = Optional.empty();
        
        Optional<EstimatedRobotPose> visionEst = Optional.empty();
        for(int i = 0; i < cams.length; i++) {
 
            for (var change : cams[i].getAllUnreadResults()) {
 
-                visionEst = photonEstimators[1].update(change);
+                visionEst = photonEstimators[i].update(change);
                 updateEstimationStdDevs(visionEst, change.getTargets());
                 visionEst.ifPresent(
                     est -> {
@@ -204,8 +205,9 @@ public class Vision extends SubsystemBase {
        //return visionEst;
         
         }
-        optionVisionEsts = Optional.of(visionEsts.toArray(new EstimatedRobotPose[0]));
-        return optionVisionEsts;
+        
+        
+        return Optional.of(visionEsts.toArray(new EstimatedRobotPose[0]));
     }
 
     /**
@@ -215,8 +217,7 @@ public class Vision extends SubsystemBase {
      * @param estimatedPose The estimated pose to guess standard deviations for.
      * @param targets All targets in this camera frame
      */
-    private void updateEstimationStdDevs(
-            Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
+    private void updateEstimationStdDevs(Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
         if (estimatedPose.isEmpty()) {
             // No pose input. Default to single-tag std devs
             curStdDevs = kSingleTagStdDevs;
