@@ -152,13 +152,13 @@ public class RobotContainer {
           m_driverController::getRightY)
       .headingWhile(false);
     
-    drivebase.setDefaultCommand(new SwerveTeleopCommand(
-      drivebase,
-      swerveDrive,
-      driveAngularVelocity,
-      driveDirectAngle,
-      () -> m_driverController.getPOV() != -1
-    )); 
+    //drivebase.setDefaultCommand(new SwerveTeleopCommand(
+    //  drivebase,
+    //  swerveDrive,
+    //  driveAngularVelocity,
+    //  driveDirectAngle,
+    //  () -> m_driverController.getPOV() != -1
+    //)); 
 
 
     pathRunner.setDefaultCommand(new TeleopPathCommand(

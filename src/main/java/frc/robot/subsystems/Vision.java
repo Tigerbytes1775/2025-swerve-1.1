@@ -138,10 +138,13 @@ public class Vision extends SubsystemBase {
     public void addVisionMeasurement() {
 
         swerveDrive.updateOdometry();
-        for (int i = 0; i < cams.length; i++) {
-            var visionEst = GetVisionEstimate()[i];
-            visionEst.ifPresent(
-                est -> {
+
+        Optional<EstimatedRobotPose[]> optionVisionEsts = GetVisionEstimate();
+        optionVisionEsts.ifPresent(
+            ests -> {
+                for (int i = 0; i < ests.length; i++) {
+                    EstimatedRobotPose est = ests[i];
+                    
                     // Change our trust in the measurement based on the tags we can see
                     var estStdDevs = getEstimationStdDevs();
 
@@ -156,25 +159,33 @@ public class Vision extends SubsystemBase {
 
                     SmartDashboard.putNumberArray("Robot Pose Est:", poseEstArray);
                     //est.timestampSeconds, estStdDevs;
+                        
+            
                 }
-            );
-        }
+            }
+        );
+        
         
 
     }
 
-    public Optional<EstimatedRobotPose>[] GetVisionEstimate() {
-       List<Optional<EstimatedRobotPose>> visionEsts = new ArrayList<>();
+    public Optional<EstimatedRobotPose[]> GetVisionEstimate() {
+       List<EstimatedRobotPose> visionEsts = new ArrayList<>();
+       Optional<EstimatedRobotPose[]> optionVisionEsts = Optional.empty();
        
        Optional<EstimatedRobotPose> visionEst = Optional.empty();
        for(int i = 0; i < cams.length; i++) {
 
            for (var change : cams[i].getAllUnreadResults()) {
 
-               visionEst = photonEstimators[1].update(change);
-               updateEstimationStdDevs(visionEst, change.getTargets());
+                visionEst = photonEstimators[1].update(change);
+                updateEstimationStdDevs(visionEst, change.getTargets());
+                visionEst.ifPresent(
+                    est -> {
+                        visionEsts.add(est);
+                    }
+                );
                
-               visionEsts.add(visionEst);
 
                if (Robot.isSimulation()) {
                    visionEst.ifPresentOrElse(
@@ -193,7 +204,8 @@ public class Vision extends SubsystemBase {
        //return visionEst;
         
         }
-        return  (Optional<EstimatedRobotPose>[])visionEsts.toArray();
+        optionVisionEsts = Optional.of(visionEsts.toArray(new EstimatedRobotPose[0]));
+        return optionVisionEsts;
     }
 
     /**

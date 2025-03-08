@@ -38,9 +38,10 @@ public class SwerveTeleopCommand extends Command {
         if(dPad.getAsBoolean()) {
             drivebase.zeroGyro();
         } 
-        drivebase.driveFieldOriented(drivebase.getRobotVelocity());
+        //drivebase.driveFieldOriented(drivebase.getRobotVelocity());
         //drivebase.driveFieldOriented(driveDirectAngle);
-        //drivebase.driveFieldOriented(driveAngularVelocity);
+        System.out.println("Swerving");
+        drivebase.driveFieldOriented(driveAngularVelocity);
         
     }
     
