@@ -14,7 +14,7 @@ public class Elevator extends SubsystemBase {
     
     private final SparkFlex elevatorMotor;
 
-    private final double elevatorSpeed = 0.2;
+    private final double elevatorSpeed = 0.3;
 
     private final PidController pidController;
 

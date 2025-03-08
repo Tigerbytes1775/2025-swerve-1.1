@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.config.SparkBaseConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,6 +22,8 @@ public class AlgaePivot extends SubsystemBase {
 
     public AlgaePivot() {
         algaeMotor = new SparkFlex(30, SparkLowLevel.MotorType.kBrushless);
+
+        //algaeMotor.configure(SparkBaseConfig.IdleMode.kBrake, SparkBase.ResetMode., null);
         pidController = new PidController(SmartDashboard.getNumber("Pivot p:", 0.1),
         SmartDashboard.getNumber("Pivot i:", 0.1), 0, algaeMotor);
         

@@ -8,7 +8,8 @@ import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.math.MathUtil;
 //import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj.XboxController;
@@ -174,34 +175,71 @@ public class RobotContainer {
     
     //vision.setDefaultCommand(new VisionCommand(vision));
 
-    algaePivot.setDefaultCommand(new TeleopAlgaePivotCommand(
-        algaePivot,
-        MechDriver::getLeftY
+    //algaePivot.setDefaultCommand(new TeleopAlgaePivotCommand(
+    //    algaePivot,
+    //    MechDriver::getLeftY
+    //  )
+    //);
+    algaePivot.setDefaultCommand(
+      algaePivot.run(() -> {
+          algaePivot.setMotors(MathUtil.applyDeadband(MechDriver.getLeftY(), 0.1));
+        }
       )
     );
 
-    algaeIntake.setDefaultCommand(new TeleopAlgaeIntakeCommand(
-        algaeIntake,
-        MechDriver::getRightBumperButton,
-        MechDriver::getLeftBumperButton 
+    //algaeIntake.setDefaultCommand(new TeleopAlgaeIntakeCommand(
+    //    algaeIntake,
+    //    MechDriver::getRightBumperButton,
+    //    MechDriver::getLeftBumperButton 
+    //  )
+    //);
+
+    algaeIntake.setDefaultCommand(
+      algaeIntake.run(() -> {
+          algaeIntake.setMotors(
+            MechDriver.getLeftBumperButton() ? 
+            -1 : MechDriver.getRightBumperButton() ? 
+            1 : 0
+          );
+        }
       )
     );
 
-    elevator.setDefaultCommand(new TeleopElevatorCommand(
-            elevator,
-            MechDriver::getRightY
-          )
-      );
+    //elevator.setDefaultCommand(new TeleopElevatorCommand(
+    //        elevator,
+    //        MechDriver::getRightY
+    //      )
+    //  );
+    elevator.setDefaultCommand(
+      elevator.run(() -> {
+          elevator.setMotors(MathUtil.applyDeadband(MechDriver.getRightY(), 0.1));
+        }
+      )
+    );
+
+    //coral.setDefaultCommand(new TeleopCoralCommand(
+    //    coral,
+    //    MechDriver::getLeftTriggerAxis,
+    //    MechDriver::getRightTriggerAxis,
+    //    () -> MechDriver.getPOV() != -1
+    //  )
+    //);
     
 
-    coral.setDefaultCommand(new TeleopCoralCommand(
-        coral,
-        MechDriver::getLeftTriggerAxis,
-        MechDriver::getRightTriggerAxis,
-        () -> MechDriver.getPOV() != -1
-      )
-    );
-    
+    coral.setDefaultCommand(
+      coral.run(() -> {
+
+        coral.setInMotor(
+          MechDriver.getLeftTriggerAxis() > 0.1 ? 
+          1 : MechDriver.getPOV() != -1 ?
+          -0.2 : 0
+        );
+        coral.setOutMotor(
+          MechDriver.getRightTriggerAxis() > 0.1 ? 1 : 0
+        );
+
+      }
+    ));
   }
 
   
