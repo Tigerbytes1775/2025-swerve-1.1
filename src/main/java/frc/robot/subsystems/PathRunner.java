@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 //import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
@@ -16,7 +18,38 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PathRunner extends SubsystemBase {
 
-    
+    private double[][] blueReefInfo = new double[][]{
+        {3.7,2.94,60},
+        {3.98,2.78,60},
+        {3.2,4.19,0},
+        {3.2,3.85,0},
+        {3.96,5.28,-60},
+        {3.68,5.13,-60},
+        {5.29,5.11,-120},
+        {5.02,5.29,-120},
+        {5.81,3.84,180},
+        {5.81,4.17,180},
+        {5.01,2.8,120},
+        {5.29,2.95,120}
+    };
+
+    private double[][] redReefInfo = new double[][]{
+        {12.25,2.95,60},
+        {12.53,2.8,60},
+        {11.73,4.17,0},
+        {11.73,3.85,0},
+        {12.55,5.27,-60},
+        {12.28,5.11,-60},
+        {13.89,5.09,-120},
+        {13.63,5.28,-120},
+        {14.38,4.19,180},
+        {14.38,3.85,180},
+        {13.58,2.8,120},
+        {18.89,2.95,120}
+    };
+
+    private Command[] reefPathCommands = new Command[12];
+    private Pose2d[] reefPoses = new Pose2d[12];
 
     private PathConstraints constraints;
 
@@ -69,15 +102,32 @@ public class PathRunner extends SubsystemBase {
         currentCommand.schedule();
     }
 
+    public void goToReef() {
+        //currentCommand = goToReef;
+        currentCommand.schedule();
+    }
+
     private void congifurePaths() {
 
-
-        
         DriverStation.getAlliance().ifPresent(
             alliance -> {
                 isBlue = alliance == Alliance.Blue;
             }
         );
+
+        int i = 0;
+        for(double[] reefInfo : isBlue ? blueReefInfo : redReefInfo) {
+            Pose2d reefPose = new Pose2d(reefInfo[0], reefInfo[1], Rotation2d.fromDegrees(reefInfo[2]));
+            
+            reefPoses[i] = reefPose;
+
+            reefPathCommands[i] = AutoBuilder.pathfindToPose(
+                reefPose, 
+                constraints, 
+                0.0
+            );
+            i++;
+        }
 
 
         constraints = new PathConstraints(
@@ -89,7 +139,7 @@ public class PathRunner extends SubsystemBase {
         processorPose = isBlue ? new Pose2d(11.515, 7.515, Rotation2d.fromDegrees(90)) : new Pose2d(5.967 , 0.515, Rotation2d.fromDegrees(-90));
         bargePose = isBlue ? new Pose2d(8.834, 6.677, Rotation2d.fromDegrees(0)) : new Pose2d(8.804, 1.353, Rotation2d.fromDegrees(180));
 
-
+        
         goToFeeder1 = AutoBuilder.pathfindToPose(
             feeder1Pose, 
             constraints, 

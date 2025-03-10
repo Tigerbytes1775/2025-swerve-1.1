@@ -8,8 +8,6 @@ import java.util.function.DoubleSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.math.MathUtil;
 //import edu.wpi.first.wpilibj2.command.CommandScheduler;
 //import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj.XboxController;
@@ -24,17 +22,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.Filesystem;
 //import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.SwerveTeleopCommand;
-import frc.robot.commands.TeleopAlgaeIntakeCommand;
-import frc.robot.commands.TeleopAlgaePivotCommand;
-import frc.robot.commands.TeleopCoralCommand;
-import frc.robot.commands.TeleopElevatorCommand;
-import frc.robot.commands.TeleopPathCommand;
-import frc.robot.commands.VisionCommand;
+
 import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.AlgaePivot;
 import frc.robot.subsystems.Coral;
@@ -137,76 +128,25 @@ public class RobotContainer {
 
   private void configureCommands() {
 
-    //new BooleanEvent(new EventLoop(), () -> m_driverController.getPOV() != -1).ifHigh(() -> System.out.println("DPAD PRESSED"));
-    
-    //this.m_driverController.x().onTrue(new InstantCommand(this.swerveDrive::zeroGyro, this.drivebase));
-    //DoubleSupplier swerveMultiplier = () -> m_driverController.getLeftBumperButton() ? 0.5 : 1.0;
-    //SwerveInputStream driveAngularVelocity = SwerveInputStream.of(
-    //  drivebase.getSwerveDrive(),
-    //  () -> m_driverController.getLeftY() * -swerveMultiplier.getAsDouble(),
-    //  () -> m_driverController.getLeftX() * -swerveMultiplier.getAsDouble())
-    //  .withControllerRotationAxis(m_driverController::getRightX)
-    //  .deadband(OperatorConstants.DEADBAND)
-    //  .scaleTranslation(0.8)
-    //  .allianceRelativeControl(true);
-    
-    //SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
-    //  .withControllerHeadingAxis(m_driverController::getRightX,
-    //      m_driverController::getRightY)
-    //  .headingWhile(false);
-    //
-    //drivebase.setDefaultCommand(new SwerveTeleopCommand(
-    //  drivebase,
-    //  swerveDrive,
-    //  driveAngularVelocity,
-    //  //driveDirectAngle,
-    //  () -> m_driverController.getPOV() != -1
-    //)); 
-
-
     pathRunner.setDefaultCommand(
         pathRunner.GetTeleopCommand(driverController)
     );
     
-    //vision.setDefaultCommand(new VisionCommand(vision));
-
-    //algaePivot.setDefaultCommand(new TeleopAlgaePivotCommand(
-    //    algaePivot,
-    //    MechDriver::getLeftY
-    //  )
-    //);
+    vision.setDefaultCommand(
+      vision.GetTeleopCommand()
+    );
+    
     algaePivot.setDefaultCommand(
       algaePivot.GetTeleopCommand(MechDriver)
     );
-
-    //algaeIntake.setDefaultCommand(new TeleopAlgaeIntakeCommand(
-    //    algaeIntake,
-    //    MechDriver::getRightBumperButton,
-    //    MechDriver::getLeftBumperButton 
-    //  )
-    //);
 
     algaeIntake.setDefaultCommand(
       algaeIntake.GetTeleopCommand(MechDriver)
     );
 
-    //elevator.setDefaultCommand(new TeleopElevatorCommand(
-    //        elevator,
-    //        MechDriver::getRightY
-    //      )
-    //  );
     elevator.setDefaultCommand(
       elevator.GetTeleopCommand(MechDriver)
-    );
-
-    //coral.setDefaultCommand(new TeleopCoralCommand(
-    //    coral,
-    //    MechDriver::getLeftTriggerAxis,
-    //    MechDriver::getRightTriggerAxis,
-    //    () -> MechDriver.getPOV() != -1
-    //  )
-    //);
-    
+    );    
 
     coral.setDefaultCommand(
       coral.GetTeleopCommand(MechDriver)
