@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,10 +29,27 @@ public class Coral extends SubsystemBase {
     }
 
     public void setOutMotor(double percent){
-        double power = percent * coralPowerOut;
+        double power = -percent * coralPowerOut;
         coralMotorOut.set(power);
         SmartDashboard.putNumber("Coral OutMotor(%)", power);
 
+    }
+
+    public Command GetTeleopCommand(XboxController controller) {
+        return run(() -> {
+
+            setInMotor(
+              controller.getLeftTriggerAxis() > 0.1 ? 1 : 0
+            );
+            
+            setOutMotor(
+              controller.getRightTriggerAxis() > 0.1 ? 
+              1 : controller.getPOV() != -1 ?
+              -0.2 : 0
+            );
+    
+          }
+        );
     }
 
     public static Command GetCoralCommand(Coral coral, double percent, double commandTime) {

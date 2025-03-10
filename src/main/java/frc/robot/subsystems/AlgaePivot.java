@@ -5,6 +5,8 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.config.SparkBaseConfig;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,8 +16,8 @@ public class AlgaePivot extends SubsystemBase {
     
     private final SparkFlex algaeMotor;
 
-    private final double algeaStrengthUp = 0.15;
-    private final double algeaStrengthDown = 0.1;
+    private final double algeaStrengthUp = 0.1;
+    private final double algeaStrengthDown = 0.15;
 
     private final PidController pidController;
 
@@ -32,9 +34,9 @@ public class AlgaePivot extends SubsystemBase {
     public void setMotors(double percent) {
         double power = 0;
         if(percent < 0 )  {
-            power = -algeaStrengthDown;
+            power = algeaStrengthDown;
         } else if (percent > 0) {
-            power = algeaStrengthUp;
+            power = -algeaStrengthUp;
         } 
 
         SmartDashboard.putNumber("Algae Pivot Power(%)", power);
@@ -54,6 +56,13 @@ public class AlgaePivot extends SubsystemBase {
     public void update() {
         //pidController.update();
         //setMotors(pidController.GetForce());
+    }
+
+    public Command GetTeleopCommand(XboxController controller) {
+        return run(() -> {
+            setMotors(MathUtil.applyDeadband(controller.getLeftY(), 0.1));
+        }
+      );
     }
 
     public static Command GetAlgaePivotCommand(AlgaePivot algaePivot, double target) {

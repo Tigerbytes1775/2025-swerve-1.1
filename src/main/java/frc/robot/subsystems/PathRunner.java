@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,6 +37,8 @@ public class PathRunner extends SubsystemBase {
 
     private Command currentCommand;
 
+
+    public boolean commandRunning = false;
     public PathRunner() {
         congifurePaths();
     }
@@ -110,12 +113,41 @@ public class PathRunner extends SubsystemBase {
             constraints, 
             0.0
         );
+ 
+    }
 
+    public Command GetTeleopCommand(XboxController controller) {
+        return run(() -> {
+            boolean aButton = controller.getAButton();
+            boolean bButton = controller.getBButton();
+            boolean xButton = controller.getXButton();  
+            boolean yButton = controller.getYButton();  
 
+            boolean anyButtonPressed = aButton || bButton || xButton || yButton;
 
+            if(!anyButtonPressed && commandRunning) {
+                stopPaths();
+                commandRunning = false;
+            }
 
+            if(!commandRunning) {
 
-
-        
+                if(aButton) {
+                    goToFeeder1();
+                    commandRunning = true;
+                } else if(bButton) {
+                    goToFeeder2();
+                    commandRunning = true;
+                } else if(xButton) {
+                    goToProcessor();
+                    commandRunning = true;
+                } else if(yButton) {
+                    goToBarge();
+                    commandRunning = true;
+                } else {
+                    commandRunning = false;
+                }
+            }
+        });     
     }
 }

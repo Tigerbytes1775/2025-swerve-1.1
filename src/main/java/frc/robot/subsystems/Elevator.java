@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -55,7 +57,14 @@ public class Elevator extends SubsystemBase {
 
     }
 
-    public static Command GetElevatorCommand(Elevator elevator, double target) {
+    public Command GetTeleopCommand(XboxController controller) {
+        return run(() -> {
+            setMotors(MathUtil.applyDeadband(controller.getRightY(), 0.1));
+        });
+    }
+
+
+    public static Command GetAutoCommand(Elevator elevator, double target) {
         return new Command() {
             
 

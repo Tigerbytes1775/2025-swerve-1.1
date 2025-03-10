@@ -118,10 +118,10 @@ public class RobotContainer {
     configureCommands();
 
     
-    NamedCommands.registerCommand("ElevatorL1", Elevator.GetElevatorCommand(elevator, 0));
-    NamedCommands.registerCommand("ElevatorL2", Elevator.GetElevatorCommand(elevator, 10));
-    NamedCommands.registerCommand("ElevatorL3", Elevator.GetElevatorCommand(elevator, 20));
-    NamedCommands.registerCommand("ElevatorL4", Elevator.GetElevatorCommand(elevator, 30));
+    NamedCommands.registerCommand("ElevatorL1", Elevator.GetAutoCommand(elevator, 0));
+    NamedCommands.registerCommand("ElevatorL2", Elevator.GetAutoCommand(elevator, 10));
+    NamedCommands.registerCommand("ElevatorL3", Elevator.GetAutoCommand(elevator, 20));
+    NamedCommands.registerCommand("ElevatorL4", Elevator.GetAutoCommand(elevator, 30));
 
     NamedCommands.registerCommand("CoralIn", Coral.GetCoralCommand(coral, 1, 1));
     NamedCommands.registerCommand("CoralOut", Coral.GetCoralCommand(coral, -1, 1));
@@ -164,13 +164,8 @@ public class RobotContainer {
     //)); 
 
 
-    pathRunner.setDefaultCommand(new TeleopPathCommand(
-        pathRunner,
-        driverController::getAButton,
-        driverController::getBButton,
-        driverController::getXButton,
-        driverController::getYButton
-      )
+    pathRunner.setDefaultCommand(
+        pathRunner.GetTeleopCommand(driverController)
     );
     
     //vision.setDefaultCommand(new VisionCommand(vision));
@@ -181,10 +176,7 @@ public class RobotContainer {
     //  )
     //);
     algaePivot.setDefaultCommand(
-      algaePivot.run(() -> {
-          algaePivot.setMotors(MathUtil.applyDeadband(MechDriver.getLeftY(), 0.1));
-        }
-      )
+      algaePivot.GetTeleopCommand(MechDriver)
     );
 
     //algaeIntake.setDefaultCommand(new TeleopAlgaeIntakeCommand(
@@ -195,14 +187,7 @@ public class RobotContainer {
     //);
 
     algaeIntake.setDefaultCommand(
-      algaeIntake.run(() -> {
-          algaeIntake.setMotors(
-            MechDriver.getLeftBumperButton() ? 
-            -1 : MechDriver.getRightBumperButton() ? 
-            1 : 0
-          );
-        }
-      )
+      algaeIntake.GetTeleopCommand(MechDriver)
     );
 
     //elevator.setDefaultCommand(new TeleopElevatorCommand(
@@ -211,10 +196,7 @@ public class RobotContainer {
     //      )
     //  );
     elevator.setDefaultCommand(
-      elevator.run(() -> {
-          elevator.setMotors(MathUtil.applyDeadband(MechDriver.getRightY(), 0.1));
-        }
-      )
+      elevator.GetTeleopCommand(MechDriver)
     );
 
     //coral.setDefaultCommand(new TeleopCoralCommand(
@@ -227,19 +209,8 @@ public class RobotContainer {
     
 
     coral.setDefaultCommand(
-      coral.run(() -> {
-
-        coral.setInMotor(
-          MechDriver.getLeftTriggerAxis() > 0.1 ? 
-          1 : MechDriver.getPOV() != -1 ?
-          -0.2 : 0
-        );
-        coral.setOutMotor(
-          MechDriver.getRightTriggerAxis() > 0.1 ? 1 : 0
-        );
-
-      }
-    ));
+      coral.GetTeleopCommand(MechDriver)
+    );
   }
 
   

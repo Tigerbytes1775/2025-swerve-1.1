@@ -4,6 +4,7 @@ import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -30,6 +31,17 @@ public class AlgaeIntake extends SubsystemBase {
             algaeMotor.stopMotor();
 
         }
+    }
+    
+    public Command GetTeleopCommand(XboxController controller) {
+        return run(() -> {
+            setMotors(
+              controller.getLeftBumperButton() ? 
+              -1 : controller.getRightBumperButton() ? 
+              1 : 0
+            );
+          }
+        );
     }
 
     public static Command GetAlgaeIntakeCommand(AlgaeIntake algaeIntake, double percent, double commandTime) {
