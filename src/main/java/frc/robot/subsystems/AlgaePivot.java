@@ -1,16 +1,13 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.config.SparkBaseConfig;
-
-import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.PidController;
+
 
 public class AlgaePivot extends SubsystemBase {
     
@@ -19,15 +16,17 @@ public class AlgaePivot extends SubsystemBase {
     private final double algeaStrengthUp = 0.1;
     private final double algeaStrengthDown = 0.15;
 
-    private final PidController pidController;
+    private final double downTarget = 10;
+    private final double upTarget = 30;
+
+    private final PIDController pidController;
 
 
     public AlgaePivot() {
         algaeMotor = new SparkFlex(30, SparkLowLevel.MotorType.kBrushless);
 
         //algaeMotor.configure(SparkBaseConfig.IdleMode.kBrake, SparkBase.ResetMode., null);
-        pidController = new PidController(SmartDashboard.getNumber("Pivot p:", 0.1),
-        SmartDashboard.getNumber("Pivot i:", 0.1), 0, algaeMotor);
+        pidController = new PIDController(0,0, 0);
         
     }
 
@@ -50,17 +49,25 @@ public class AlgaePivot extends SubsystemBase {
     }
 
     public void setTarget(double target) {
-        //pidController.setTargetPoint(target);
+        pidController.setSetpoint(target);
     }
 
     public void update() {
-        //pidController.update();
-        //setMotors(pidController.GetForce());
+        setMotors(pidController.calculate(algaeMotor.getAbsoluteEncoder().getPosition()));
     }
 
     public Command GetTeleopCommand(XboxController controller) {
         return run(() -> {
-            setMotors(MathUtil.applyDeadband(controller.getLeftY(), 0.1));
+            double leftY = controller.getLeftY();
+
+            boolean isUp = leftY > 0.5;
+            boolean isDown = leftY < -0.5;
+
+            if(isUp || isDown) {
+                setTarget(isDown ? downTarget : upTarget);
+            }
+            
+            update();
         }
       );
     }
@@ -71,7 +78,7 @@ public class AlgaePivot extends SubsystemBase {
 
             @Override
             public void initialize() {
-                algaePivot.pidController.setTargetPoint(target);
+                algaePivot.setTarget(target);
             }
 
             @Override
@@ -81,7 +88,7 @@ public class AlgaePivot extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
-                return algaePivot.pidController.IsAtTarget();
+                return algaePivot.pidController.atSetpoint();
             }
         };
     }

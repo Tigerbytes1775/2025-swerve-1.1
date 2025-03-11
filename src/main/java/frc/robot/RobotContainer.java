@@ -58,7 +58,7 @@ import swervelib.SwerveInputStream;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final SwerveSubsystem drivebase;
+  private final SwerveSubsystem swerveSubsystem;
   private final SwerveDrive swerveDrive;
   public final Vision vision;
   private final Elevator elevator;
@@ -88,10 +88,10 @@ public class RobotContainer {
 
     this.MechDriver = new XboxController(1);
 
-    this.drivebase = new SwerveSubsystem();
-    this.swerveDrive = drivebase.getSwerveDrive();
+    this.swerveSubsystem = new SwerveSubsystem();
+    this.swerveDrive = swerveSubsystem.getSwerveDrive();
 
-    this.pathRunner = new PathRunner();
+    this.pathRunner = new PathRunner(swerveSubsystem);
     this.elevator = new Elevator();
     this.coral = new Coral();
     this.algaeIntake = new AlgaeIntake();
@@ -129,7 +129,7 @@ public class RobotContainer {
   private void configureCommands() {
 
     pathRunner.setDefaultCommand(
-        pathRunner.GetTeleopCommand(driverController)
+      pathRunner.GetTeleopCommand(driverController)
     );
     
     vision.setDefaultCommand(
@@ -173,7 +173,7 @@ public class RobotContainer {
     
     DoubleSupplier swerveScalar = () -> driverController.getLeftBumperButton() ? 0.5 : 1.0;
     SwerveInputStream driveAngularVelocity = SwerveInputStream.of(
-      drivebase.getSwerveDrive(),
+      swerveSubsystem.getSwerveDrive(),
       () -> driverController.getLeftY() * -swerveScalar.getAsDouble(),
       () -> driverController.getLeftX() * -swerveScalar.getAsDouble()
     )
@@ -182,19 +182,19 @@ public class RobotContainer {
       .scaleTranslation(0.8)
       .allianceRelativeControl(true);
 
-    SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
-      .withControllerHeadingAxis(driverController::getRightX,
-          driverController::getRightY)
-      .headingWhile(false);
+    //SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
+    //  .withControllerHeadingAxis(driverController::getRightX,
+    //      driverController::getRightY)
+    //  .headingWhile(false);
     // affects the things
-    Command driveFieldOrientedDirectAngle = drivebase.driveFieldOriented(driveDirectAngle);
+    //Command driveFieldOrientedDirectAngle = swerveSubsystem.driveFieldOriented(driveDirectAngle);
 
-    Command DriveFieldOrientedAngularVelocity = drivebase.driveFieldOriented(
-      drivebase, 
+    Command DriveFieldOrientedAngularVelocity = swerveSubsystem.driveFieldOriented(
+      swerveSubsystem, 
       driveAngularVelocity, 
       () -> driverController.getPOV() != -1
     );
-    drivebase.setDefaultCommand(DriveFieldOrientedAngularVelocity);
+    swerveSubsystem.setDefaultCommand(DriveFieldOrientedAngularVelocity);
     
     
   }

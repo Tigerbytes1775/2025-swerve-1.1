@@ -1,13 +1,12 @@
 package frc.robot.subsystems;
 
-import java.util.ArrayList;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 //import com.pathplanner.lib.trajectory.PathPlannerTrajectory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
@@ -18,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PathRunner extends SubsystemBase {
 
-    private double[][] blueReefInfo = new double[][]{
+    private double[][] allBlueReefInfo = new double[][]{
         {3.7,2.94,60},
         {3.98,2.78,60},
         {3.2,4.19,0},
@@ -33,7 +32,7 @@ public class PathRunner extends SubsystemBase {
         {5.29,2.95,120}
     };
 
-    private double[][] redReefInfo = new double[][]{
+    private double[][] allRedReefInfo = new double[][]{
         {12.25,2.95,60},
         {12.53,2.8,60},
         {11.73,4.17,0},
@@ -48,6 +47,8 @@ public class PathRunner extends SubsystemBase {
         {18.89,2.95,120}
     };
 
+    private final SwerveSubsystem swerveSubsystem;
+    private Translation2d[] reefSidePoints = new Translation2d[6];
     private Command[] reefPathCommands = new Command[12];
     private Pose2d[] reefPoses = new Pose2d[12];
 
@@ -67,16 +68,14 @@ public class PathRunner extends SubsystemBase {
 
     private boolean isBlue = false;
 
-
     private Command currentCommand;
 
-
     public boolean commandRunning = false;
-    public PathRunner() {
-        congifurePaths();
-    }
 
-    
+    public PathRunner(SwerveSubsystem swerveSubsystem) {
+        congifurePaths();
+        this.swerveSubsystem = swerveSubsystem;
+    }
 
     public void stopPaths() {
         currentCommand.cancel();
@@ -102,9 +101,29 @@ public class PathRunner extends SubsystemBase {
         currentCommand.schedule();
     }
 
-    public void goToReef() {
-        //currentCommand = goToReef;
+    public void GoToReef(int side, boolean isLeft) {
+        currentCommand = AutoBuilder.pathfindToPose(
+            reefPoses[side * 2 + (isLeft ? 1 : 0)], 
+            constraints,
+            0.0 
+        );
         currentCommand.schedule();
+    }
+
+    public int getReefSide() {
+
+        swerveSubsystem.getPose();
+        int closestReefSide = 0;
+        double closestDistance = Double.MAX_VALUE;
+        for(int i = 0; i < 6; i++) { 
+            double distance = swerveSubsystem.getPose().getTranslation().getDistance(reefSidePoints[i]);
+            if(distance < closestDistance) {
+                closestDistance = distance;
+                closestReefSide = i;
+            
+            }
+        }
+        return closestReefSide;
     }
 
     private void congifurePaths() {
@@ -115,17 +134,24 @@ public class PathRunner extends SubsystemBase {
             }
         );
 
+        double[] lastReefInfo = new double[2];
         int i = 0;
-        for(double[] reefInfo : isBlue ? blueReefInfo : redReefInfo) {
+        for(double[] reefInfo : isBlue ? allBlueReefInfo : allRedReefInfo) {
+            
             Pose2d reefPose = new Pose2d(reefInfo[0], reefInfo[1], Rotation2d.fromDegrees(reefInfo[2]));
             
+            if(i % 2 == 1) {
+                reefSidePoints[i] = new Translation2d((reefInfo[0] + lastReefInfo[0])/2, (reefInfo[1] + lastReefInfo[1])/2);
+            }
+
             reefPoses[i] = reefPose;
 
             reefPathCommands[i] = AutoBuilder.pathfindToPose(
                 reefPose, 
-                constraints, 
+                constraints,
                 0.0
             );
+            lastReefInfo = reefInfo;
             i++;
         }
 
@@ -163,7 +189,7 @@ public class PathRunner extends SubsystemBase {
             constraints, 
             0.0
         );
- 
+        
     }
 
     public Command GetTeleopCommand(XboxController controller) {
@@ -172,6 +198,8 @@ public class PathRunner extends SubsystemBase {
             boolean bButton = controller.getBButton();
             boolean xButton = controller.getXButton();  
             boolean yButton = controller.getYButton();  
+            boolean lTrigger = controller.getLeftTriggerAxis() > 0.1;
+            boolean rTrigger = controller.getRightTriggerAxis() > 0.1;
 
             boolean anyButtonPressed = aButton || bButton || xButton || yButton;
 
@@ -194,9 +222,14 @@ public class PathRunner extends SubsystemBase {
                 } else if(yButton) {
                     goToBarge();
                     commandRunning = true;
-                } else {
-                    commandRunning = false;
-                }
+                } else if (lTrigger) { 
+                    GoToReef(getReefSide(), true);
+                    commandRunning = true;
+                } else if (rTrigger) {
+                    GoToReef(getReefSide(), false);
+                    commandRunning = true;
+
+                } 
             }
         });     
     }
