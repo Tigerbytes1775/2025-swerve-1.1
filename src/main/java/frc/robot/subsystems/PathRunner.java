@@ -141,7 +141,7 @@ public class PathRunner extends SubsystemBase {
             Pose2d reefPose = new Pose2d(reefInfo[0], reefInfo[1], Rotation2d.fromDegrees(reefInfo[2]));
             
             if(i % 2 == 1) {
-                reefSidePoints[i] = new Translation2d((reefInfo[0] + lastReefInfo[0])/2, (reefInfo[1] + lastReefInfo[1])/2);
+                reefSidePoints[(i - 1)/2] = new Translation2d((reefInfo[0] + lastReefInfo[0])/2, (reefInfo[1] + lastReefInfo[1])/2);
             }
 
             reefPoses[i] = reefPose;

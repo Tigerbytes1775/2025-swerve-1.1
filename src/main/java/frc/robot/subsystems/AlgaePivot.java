@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,8 +15,8 @@ public class AlgaePivot extends SubsystemBase {
     
     private final SparkFlex algaeMotor;
 
-    private final double algeaStrengthUp = 0.1;
-    private final double algeaStrengthDown = 0.15;
+    private final double algeaPowerUp = -0.1;
+    private final double algeaPowerDown = 0.15;
 
     private final double downTarget = 10;
     private final double upTarget = 30;
@@ -31,12 +33,12 @@ public class AlgaePivot extends SubsystemBase {
     }
 
     public void setMotors(double percent) {
-        double power = 0;
-        if(percent < 0 )  {
-            power = algeaStrengthDown;
-        } else if (percent > 0) {
-            power = -algeaStrengthUp;
-        } 
+        
+
+        double power = 
+            percent == 0 ?
+            0 : percent > 0?
+            algeaPowerUp : algeaPowerDown;
 
         SmartDashboard.putNumber("Algae Pivot Power(%)", power);
         SmartDashboard.putNumber("Algae Pivot Pos", algaeMotor.getAbsoluteEncoder().getPosition());
@@ -58,16 +60,17 @@ public class AlgaePivot extends SubsystemBase {
 
     public Command GetTeleopCommand(XboxController controller) {
         return run(() -> {
-            double leftY = controller.getLeftY();
+            double leftY = MathUtil.applyDeadband(controller.getLeftY(), 0.1);
 
-            boolean isUp = leftY > 0.5;
-            boolean isDown = leftY < -0.5;
+            setMotors(leftY);
+            //boolean isUp = leftY > 0.5;
+            //boolean isDown = leftY < -0.5;
 
-            if(isUp || isDown) {
-                setTarget(isDown ? downTarget : upTarget);
-            }
+            //if(isUp || isDown) {
+            //    setTarget(isDown ? downTarget : upTarget);
+            //}
             
-            update();
+            //update();
         }
       );
     }

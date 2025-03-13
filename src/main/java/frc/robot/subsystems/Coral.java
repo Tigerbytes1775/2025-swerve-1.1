@@ -28,8 +28,9 @@ public class Coral extends SubsystemBase {
 
     public void setOutMotor(double percent){
         double power = -percent * coralPowerOut;
-        coralMotorOut.set(power);
+        
         SmartDashboard.putNumber("Coral OutMotor(%)", power);
+        coralMotorOut.set(power);
 
     }
 

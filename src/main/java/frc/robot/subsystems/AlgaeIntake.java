@@ -22,14 +22,15 @@ public class AlgaeIntake extends SubsystemBase {
 
     public void setMotors(double percent) {
         double power = percent * algeaStrength;
-        algaeMotor.set(power);
 
         SmartDashboard.putNumber("Algae intake power(%)", power);
 
         if (percent == 0){
             algaeMotor.stopMotor();
-
+        } else {
+            algaeMotor.set(power);
         }
+        
     }
     
     public Command GetTeleopCommand(XboxController controller) {

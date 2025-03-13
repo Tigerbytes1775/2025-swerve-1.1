@@ -7,7 +7,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+
+
 
 
 
@@ -24,6 +27,8 @@ public class Elevator extends SubsystemBase {
     public final double L2Height = 25;
     public final double L3Height = 50;
     public final double L4Height = 80;
+
+    public boolean pidEnabled = false;
 
 
 
@@ -51,6 +56,7 @@ public class Elevator extends SubsystemBase {
         //pidController.setTargetPoint(target);
         pidController.setSetpoint(target);
         
+        
     }
 
     
@@ -64,24 +70,39 @@ public class Elevator extends SubsystemBase {
 
     public Command GetTeleopCommand(XboxController controller) {
         return run(() -> {
+            double rightY = MathUtil.applyDeadband(controller.getRightY(), 0.1);
 
             boolean aButton = controller.getAButtonPressed();
             boolean bButton = controller.getBButtonPressed();
             boolean xButton = controller.getXButtonPressed();
             boolean yButton = controller.getYButtonPressed();
 
-            boolean anyButton = aButton || bButton || xButton || yButton;
+            boolean anyPidButton = aButton || bButton || xButton || yButton;
 
-            if(anyButton) {
-                setTarget(
-                    aButton ? 
-                    L1Height : bButton ?
-                    L2Height : xButton ?
-                    L3Height : L4Height
-                );
+
+            pidEnabled = 
+                rightY != 0 ?
+                false : anyPidButton ?
+                true : pidEnabled;
+                
+
+
+            if(pidEnabled) {
+                
+                if(anyPidButton) {
+                    setTarget(
+                        aButton ? 
+                        L1Height : bButton ?
+                        L2Height : xButton ?
+                        L3Height : L4Height
+                    );
+                }
+                
+                update();
+            } else {
+                setMotors(rightY);
             }
             
-            update();
         });
     }
 

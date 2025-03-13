@@ -133,7 +133,7 @@ public class RobotContainer {
     );
     
     vision.setDefaultCommand(
-      vision.GetTeleopCommand()
+      vision.GetTeleopCommand(driverController)
     );
     
     algaePivot.setDefaultCommand(
@@ -177,7 +177,7 @@ public class RobotContainer {
       () -> driverController.getLeftY() * -swerveScalar.getAsDouble(),
       () -> driverController.getLeftX() * -swerveScalar.getAsDouble()
     )
-      .withControllerRotationAxis(() -> driverController.getRightX() * swerveScalar.getAsDouble())
+      .withControllerRotationAxis(() -> driverController.getRightX() * -swerveScalar.getAsDouble())
       .deadband(OperatorConstants.DEADBAND)
       .scaleTranslation(0.8)
       .allianceRelativeControl(true);
@@ -186,7 +186,7 @@ public class RobotContainer {
     //  .withControllerHeadingAxis(driverController::getRightX,
     //      driverController::getRightY)
     //  .headingWhile(false);
-    // affects the things
+    //// affects the things
     //Command driveFieldOrientedDirectAngle = swerveSubsystem.driveFieldOriented(driveDirectAngle);
 
     Command DriveFieldOrientedAngularVelocity = swerveSubsystem.driveFieldOriented(

@@ -33,6 +33,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -56,6 +57,8 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.geometry.Rotation3d;
 
 public class Vision extends SubsystemBase {
+
+    public boolean visionEnabled = true;
 
     private final Transform3d robotToCam1 = new Transform3d(
         new Translation3d(0.1905, 0.1524, 0.2032), 
@@ -270,9 +273,16 @@ public class Vision extends SubsystemBase {
     }
 
 
-    public Command GetTeleopCommand() {
+    public Command GetTeleopCommand(XboxController controller) {
         return run(() -> {
-            addVisionMeasurement();
+            if(visionEnabled) {
+                addVisionMeasurement();
+            
+                if(controller.getPOV() != -1) {
+                    visionEnabled = false;
+                }
+            }
+            
         });
     }
 
