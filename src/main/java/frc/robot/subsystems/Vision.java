@@ -61,12 +61,12 @@ public class Vision extends SubsystemBase {
     public boolean visionEnabled = true;
 
     private final Transform3d robotToCam1 = new Transform3d(
-        new Translation3d(0.1905, 0.1524, 0.2032), 
+        new Translation3d(0.1905, -0.1524, 0.2032), 
         new Rotation3d(0, 0, 0)
     );
 
     private final Transform3d robotToCam2 = new Transform3d(
-        new Translation3d(-0.22225, -0.2794, 0.2286), 
+        new Translation3d(-0.22225, 0.2794, 0.2286), 
         new Rotation3d(0, 0, 180)
     );
 
@@ -145,36 +145,35 @@ public class Vision extends SubsystemBase {
 
        
 
-        Optional<EstimatedRobotPose[]> optionVisionEsts = GetVisionEstimate();
-        optionVisionEsts.ifPresent(
-            ests -> {
-                for (var est : ests) {
-                    
-                    // Change our trust in the measurement based on the tags we can see
-                    var estStdDevs = getEstimationStdDevs();
+        EstimatedRobotPose[] optionVisionEsts = GetVisionEstimate();
 
-                    Pose2d estPose = est.estimatedPose.toPose2d();
-                    double[] poseEstArray = {estPose.getMeasureX().magnitude(), estPose.getMeasureY().magnitude()};
-                    
-                    swerveDrive.addVisionMeasurement(
-                        estPose, 
-                        est.timestampSeconds, 
-                        estStdDevs
-                    );
-
-                    SmartDashboard.putNumberArray("Robot Pose Est:", poseEstArray);
-                    //est.timestampSeconds, estStdDevs;
-                        
+        for (var est : optionVisionEsts) {
             
-                }
-            }
-        );
-        
-        
+            // Change our trust in the measurement based on the tags we can see
+            var estStdDevs = getEstimationStdDevs();
 
+            Pose2d estPose = est.estimatedPose.toPose2d();
+            double[] poseEstArray = {estPose.getMeasureX().magnitude(), estPose.getMeasureY().magnitude()};
+            
+            swerveDrive.addVisionMeasurement(
+                estPose, 
+                est.timestampSeconds, 
+                estStdDevs
+            );
+
+            SmartDashboard.putNumberArray("Robot Pose Est:", poseEstArray);
+            //est.timestampSeconds, estStdDevs;
+                
+    
+        }
     }
+        
+        
+        
 
-    public Optional<EstimatedRobotPose[]> GetVisionEstimate() {
+    
+
+    public EstimatedRobotPose[] GetVisionEstimate() {
        List<EstimatedRobotPose> visionEsts = new ArrayList<>();
        //Optional<EstimatedRobotPose[]> optionVisionEsts = Optional.empty();
        
@@ -211,7 +210,7 @@ public class Vision extends SubsystemBase {
         }
         
         
-        return Optional.of(visionEsts.toArray(new EstimatedRobotPose[0]));
+        return visionEsts.toArray(new EstimatedRobotPose[0]);
     }
 
     /**

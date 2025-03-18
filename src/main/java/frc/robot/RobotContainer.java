@@ -25,7 +25,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-
+import frc.robot.commands.ElevatorTeleopCommand;
+import frc.robot.commands.VisionTeleopCommand;
 import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.AlgaePivot;
 import frc.robot.subsystems.Coral;
@@ -132,8 +133,10 @@ public class RobotContainer {
       pathRunner.GetTeleopCommand(driverController)
     );
     
-    vision.setDefaultCommand(
-      vision.GetTeleopCommand(driverController)
+    vision.setDefaultCommand(new VisionTeleopCommand(
+        vision, 
+        () -> driverController.getPOV() != -1
+      )
     );
     
     algaePivot.setDefaultCommand(
@@ -144,8 +147,10 @@ public class RobotContainer {
       algaeIntake.GetTeleopCommand(MechDriver)
     );
 
-    elevator.setDefaultCommand(
-      elevator.GetTeleopCommand(MechDriver)
+    elevator.setDefaultCommand(new ElevatorTeleopCommand(
+        elevator, 
+        MechDriver
+      )
     );    
 
     coral.setDefaultCommand(

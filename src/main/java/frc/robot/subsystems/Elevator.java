@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
 
@@ -17,26 +20,30 @@ import edu.wpi.first.math.controller.PIDController;
 public class Elevator extends SubsystemBase {
     
     private final SparkFlex elevatorMotor;
+    private final DoubleSupplier pos;
+    private final RelativeEncoder encoder;
 
     private final double elevatorSpeed = 0.5;
 
     //private final PidController pidController;
     private final PIDController pidController;
 
-    public final double L1Height = SmartDashboard.getNumber("L1 Height", 45.8);
-    public final double L2Height = SmartDashboard.getNumber("L2 Height", 55.5);
-    public final double L3Height = SmartDashboard.getNumber("L3 Height", 99.3);
-    public final double L4Height = SmartDashboard.getNumber("L4 Height", 170);//ignore
+    public final double L1Height = 0;
+    public final double L2Height = 18;
+    public final double L3Height = 34;
+    public final double L4Height = 69;
 
     public boolean pidEnabled = false;
     
     public Elevator() {
         elevatorMotor  = new SparkFlex(32, SparkLowLevel.MotorType.kBrushless);
+        encoder = elevatorMotor.getEncoder();
+        pos = encoder::getPosition;
         elevatorMotor.getEncoder().setPosition(L1Height);
 
         //pidController = new PidController(0.3, 0.1, 0, elevatorMotor);
         pidController = new PIDController(
-            SmartDashboard.getNumber("Elevator PID p", 0.05),
+            SmartDashboard.getNumber("Elevator PID p", 0.005),
             SmartDashboard.getNumber("Elevator PID i", 0.01),
             SmartDashboard.getNumber("Elevator PID d", 0.0)
         );
@@ -58,12 +65,19 @@ public class Elevator extends SubsystemBase {
 
     public void setTarget(double target) {
         //pidController.setTargetPoint(target);
+
+        double pos = this.pos.getAsDouble();
         pidController.setSetpoint(target);
+        if(pos < L1Height + 1) {
+            encoder.setPosition(L1Height);
+        }
         
         
     }
 
-    
+    public void zeroEncoder() {
+        elevatorMotor.getEncoder().setPosition(L1Height);
+    }
     
 
     public void update() {
