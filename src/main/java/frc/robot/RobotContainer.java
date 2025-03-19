@@ -179,10 +179,10 @@ public class RobotContainer {
     DoubleSupplier swerveScalar = () -> driverController.getLeftBumperButton() ? 0.5 : 1.0;
     SwerveInputStream driveAngularVelocity = SwerveInputStream.of(
       swerveSubsystem.getSwerveDrive(),
-      () -> driverController.getLeftY() * -swerveScalar.getAsDouble(),
-      () -> driverController.getLeftX() * -swerveScalar.getAsDouble()
+      () -> driverController.getLeftY() * swerveScalar.getAsDouble(),
+      () -> driverController.getLeftX() * swerveScalar.getAsDouble()
     )
-      .withControllerRotationAxis(() -> driverController.getRightX() * -swerveScalar.getAsDouble())
+      .withControllerRotationAxis(() -> driverController.getRightX() * swerveScalar.getAsDouble())
       .deadband(OperatorConstants.DEADBAND)
       .scaleTranslation(0.8)
       .allianceRelativeControl(true);

@@ -145,9 +145,9 @@ public class Vision extends SubsystemBase {
 
        
 
-        EstimatedRobotPose[] optionVisionEsts = GetVisionEstimate();
+        EstimatedRobotPose[] visionEsts = GetVisionEstimates();
 
-        for (var est : optionVisionEsts) {
+        for (var est : visionEsts) {
             
             // Change our trust in the measurement based on the tags we can see
             var estStdDevs = getEstimationStdDevs();
@@ -173,7 +173,7 @@ public class Vision extends SubsystemBase {
 
     
 
-    public EstimatedRobotPose[] GetVisionEstimate() {
+    public EstimatedRobotPose[] GetVisionEstimates() {
        List<EstimatedRobotPose> visionEsts = new ArrayList<>();
        //Optional<EstimatedRobotPose[]> optionVisionEsts = Optional.empty();
        
