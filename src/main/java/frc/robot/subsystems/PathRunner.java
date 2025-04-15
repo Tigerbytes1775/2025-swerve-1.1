@@ -9,8 +9,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 //import swervelib.SwerveDrive;
@@ -18,33 +18,57 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class PathRunner extends SubsystemBase {
 
     private double[][] allBlueReefInfo = new double[][]{
-        {3.7,2.94,60},
-        {3.98,2.78,60},
-        {3.2,4.19,0},
-        {3.2,3.85,0},
-        {3.96,5.28,-60},
-        {3.68,5.13,-60},
-        {5.29,5.11,-120},
-        {5.02,5.29,-120},
-        {5.81,3.84,180},
-        {5.81,4.17,180},
-        {5.01,2.8,120},
-        {5.29,2.95,120}
+        {4.914, 3.03, -55},
+        {5.207, 3.138, -55},
+        {5.587, 3.84, 0},
+        {5.606, 4.191, 0},
+        {5.187, 4.883, 58},
+        {4.895, 5.049, 58},
+        {4.066, 5.058, 120},
+        {3.783, 4.912, 120},
+        {3.393, 4.191, 180},
+        {3.383, 3.869, 180},
+        {3.812, 3.138, -120},
+        {4.095, 2.992, -120}
+      //  {3.7,2.94,60},
+      //  {3.98,2.78,60},
+      //  {3.2,4.19,0},
+      //  {3.2,3.85,0},
+      //  {3.96,5.28,-60},
+      //  {3.68,5.13,-60},
+      //  {5.29,5.11,-120},
+      //  {5.02,5.29,-120},
+      //  {5.81,3.84,180},
+      //  {5.81,4.17,180},
+      //  {5.01,2.8,120},
+      //  {5.29,2.95,120}
     };
 
     private double[][] allRedReefInfo = new double[][]{
-        {12.25,2.95,60},
-        {12.53,2.8,60},
-        {11.73,4.17,0},
-        {11.73,3.85,0},
-        {12.55,5.27,-60},
-        {12.28,5.11,-60},
-        {13.89,5.09,-120},
-        {13.63,5.28,-120},
-        {14.38,4.19,180},
-        {14.38,3.85,180},
-        {13.58,2.8,120},
-        {18.89,2.95,120}
+        {12.392, 3.157,	-120},
+        {12.685, 3.011,	-120},
+        {11.983, 4.191,	180},
+        {11.992, 3.849,	180},
+        {12.665, 5.078,	120},
+        {12.383, 4.912,	120},
+        {13.787, 4.902,	60},
+        {13.445, 5.029,	60},
+        {14.167, 3.859,	0},
+        {14.177, 4.191,	0},
+        {13.455, 2.982,	-60},
+        {13.796, 3.118,	-60}
+    //    {12.25,2.95,60},
+    //    {12.53,2.8,60},
+    //    {11.73,4.17,0},
+    //    {11.73,3.85,0},
+    //    {12.55,5.27,-60},
+    //    {12.28,5.11,-60},
+    //    {13.89,5.09,-120},
+    //    {13.63,5.28,-120},
+    //    {14.38,4.19,180},
+    //    {14.38,3.85,180},
+    //    {13.58,2.8,120},
+    //    {18.89,2.95,120}
     };
 
     private final SwerveSubsystem swerveSubsystem;
@@ -102,11 +126,7 @@ public class PathRunner extends SubsystemBase {
     }
 
     public void GoToReef(int side, boolean isLeft) {
-        currentCommand = AutoBuilder.pathfindToPose(
-            reefPoses[side * 2 + (isLeft ? 1 : 0)], 
-            constraints,
-            0.0 
-        );
+        currentCommand = reefPathCommands[side * 2 + (isLeft ? 1 : 0)];
         currentCommand.schedule();
     }
 
@@ -114,7 +134,7 @@ public class PathRunner extends SubsystemBase {
 
         swerveSubsystem.getPose();
         int closestReefSide = 0;
-        double closestDistance = Double.MAX_VALUE;
+        double closestDistance = 10000;
         for(int i = 0; i < 6; i++) { 
             double distance = swerveSubsystem.getPose().getTranslation().getDistance(reefSidePoints[i]);
             if(distance < closestDistance) {
@@ -157,8 +177,9 @@ public class PathRunner extends SubsystemBase {
 
 
         constraints = new PathConstraints(
-            3.0, 4.0,
-            Units.degreesToRadians(540), Units.degreesToRadians(720));
+            3.0, 3.0,
+            Units.degreesToRadians(540), Units.degreesToRadians(720)
+        );
 
         feeder1Pose = isBlue ? new Pose2d(1.229, 7.038, Rotation2d.fromDegrees(-55)) : new Pose2d(16.351, 7.048, Rotation2d.fromDegrees(-125));
         feeder2Pose = isBlue ? new Pose2d(1.16, 1.032, Rotation2d.fromDegrees(55)) : new Pose2d(16.302, 0.973, Rotation2d.fromDegrees(125));

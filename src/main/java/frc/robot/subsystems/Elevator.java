@@ -20,43 +20,46 @@ import edu.wpi.first.math.controller.PIDController;
 public class Elevator extends SubsystemBase {
     
     private final SparkFlex elevatorMotor;
-    private final DoubleSupplier pos;
+    private final DoubleSupplier posSupplier;
     private final RelativeEncoder encoder;
 
-    private final double elevatorSpeed = 0.5;
+    private final double manualSpeed = 0.6;
+    private final double pidSpeedUp = 0.4;
+    private final double pidSpeedDown = 0.15;
 
     //private final PidController pidController;
-    private final PIDController pidController;
+    public final PIDController pidController;
 
     public final double L1Height = 0;
-    public final double L2Height = 18;
-    public final double L3Height = 34;
-    public final double L4Height = 69;
+    public final double L2Height = 22;
+    public final double L3Height = 49.5;
+    public final double L4Height = 96;
 
     public boolean pidEnabled = false;
     
     public Elevator() {
         elevatorMotor  = new SparkFlex(32, SparkLowLevel.MotorType.kBrushless);
         encoder = elevatorMotor.getEncoder();
-        pos = encoder::getPosition;
-        elevatorMotor.getEncoder().setPosition(L1Height);
+        posSupplier = encoder::getPosition;
+        zeroEncoder();
 
-        //pidController = new PidController(0.3, 0.1, 0, elevatorMotor);
+       
         pidController = new PIDController(
-            SmartDashboard.getNumber("Elevator PID p", 0.005),
-            SmartDashboard.getNumber("Elevator PID i", 0.01),
-            SmartDashboard.getNumber("Elevator PID d", 0.0)
+            0.1,
+            0.01,
+            0.01
         );
 
         
     }
 
     public void setMotors(double percent) {
-        
-        elevatorMotor.set(-MathUtil.applyDeadband(percent, 0.02) * elevatorSpeed);
+        double power = -percent;
+        elevatorMotor.set(power);
 
-        SmartDashboard.putNumber("Elevator Power(%)", percent * elevatorSpeed);
+        SmartDashboard.putNumber("Elevator Power(%)", power);
         SmartDashboard.putNumber("Elevator Pos", elevatorMotor.getEncoder().getPosition());
+        //SmartDashboard.putBoolean("Set Target", false);
 
         if(percent == 0) {
             elevatorMotor.stopMotor();
@@ -64,13 +67,13 @@ public class Elevator extends SubsystemBase {
     }
 
     public void setTarget(double target) {
-        //pidController.setTargetPoint(target);
-
-        double pos = this.pos.getAsDouble();
+        //SmartDashboard.putBoolean("Set Target", true);
         pidController.setSetpoint(target);
-        if(pos < L1Height + 1) {
-            encoder.setPosition(L1Height);
+
+        if(posSupplier.getAsDouble() < 3) {
+            zeroEncoder();
         }
+        
         
         
     }
@@ -81,13 +84,15 @@ public class Elevator extends SubsystemBase {
     
 
     public void update() {
-        
-        setMotors(pidController.calculate(elevatorMotor.getEncoder().getPosition()));
+        double power = -pidController.calculate(posSupplier.getAsDouble());
+        power *= power <= 0 ? pidSpeedUp : pidSpeedDown;
+        SmartDashboard.putNumber("Pid Power", -power);
+        setMotors(power);
 
     }
 
     public Command GetTeleopCommand(XboxController controller) {
-        return run(() -> {
+        Command command = run(() -> {
 
             double rightY = MathUtil.applyDeadband(controller.getRightY(), 0.1);
 
@@ -96,7 +101,7 @@ public class Elevator extends SubsystemBase {
             boolean xButton = controller.getXButtonPressed();
             boolean yButton = controller.getYButtonPressed();
 
-            boolean anyPidButton = aButton || bButton || xButton || yButton;
+            boolean anyPidButton =  aButton || bButton || xButton || yButton;
 
 
             pidEnabled = 
@@ -119,25 +124,33 @@ public class Elevator extends SubsystemBase {
                 
                 update();
             } else {
-                setMotors(rightY);
+                setMotors(rightY * manualSpeed);
             }
             
+            
         });
+
+        
+        //command.beforeStarting(runOnce(() -> zeroEncoder()));
+
+        return command;
     }
 
 
-    public static Command GetAutoCommand(Elevator elevator, double target) {
+    public Command GetAutoCommand(Elevator elevator, double target) {
         return new Command() {
             
 
             @Override
             public void initialize() {
-
+                
                 elevator.setTarget(target);
             }
 
             @Override
             public void execute() {
+
+                //System.out.println("Elevator Auto On");
                 elevator.update();
             }
 

@@ -33,6 +33,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -61,13 +62,13 @@ public class Vision extends SubsystemBase {
     public boolean visionEnabled = true;
 
     private final Transform3d robotToCam1 = new Transform3d(
-        new Translation3d(0.1905, -0.1524, 0.2032), 
+        new Translation3d(0.22225, -0.1635125, 0.254), //0.206375, -0.174625
         new Rotation3d(0, 0, 0)
     );
 
     private final Transform3d robotToCam2 = new Transform3d(
-        new Translation3d(-0.22225, 0.2794, 0.2286), 
-        new Rotation3d(0, 0, 180)
+        new Translation3d(-0.2032, 0.295275, 0.254), //-0.2286, 0.29845
+        new Rotation3d(0, 0, Math.PI)
     );
 
 
@@ -80,13 +81,13 @@ public class Vision extends SubsystemBase {
        new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCam2);;
 
     private final PhotonCamera[] cams = {
-        cam1,
-        cam2
+        cam2,
+        cam1
     };
 
     private final PhotonPoseEstimator[] photonEstimators = {
-        photonEstimator1,
-        photonEstimator2
+        photonEstimator2,
+        photonEstimator1
     };
 
     private Matrix<N3, N1> curStdDevs;

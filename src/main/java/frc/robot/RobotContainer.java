@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.CoralAutoCommand;
+import frc.robot.commands.ElevatorAutoCommand;
 import frc.robot.commands.ElevatorTeleopCommand;
 import frc.robot.commands.VisionTeleopCommand;
 import frc.robot.subsystems.AlgaeIntake;
@@ -89,16 +91,37 @@ public class RobotContainer {
 
     this.MechDriver = new XboxController(1);
 
-    this.swerveSubsystem = new SwerveSubsystem();
-    this.swerveDrive = swerveSubsystem.getSwerveDrive();
-
-    this.pathRunner = new PathRunner(swerveSubsystem);
+    
+    
     this.elevator = new Elevator();
     this.coral = new Coral();
     this.algaeIntake = new AlgaeIntake();
     this.algaePivot = new AlgaePivot();
     
+    
+
+
+    NamedCommands.registerCommand("ElevatorL1", new ElevatorAutoCommand(elevator, elevator.L1Height - 1, 1.5));
+    NamedCommands.registerCommand("ElevatorL2",new ElevatorAutoCommand(elevator, elevator.L2Height, 2));
+    NamedCommands.registerCommand("ElevatorL3", new ElevatorAutoCommand(elevator, elevator.L3Height, 2));
+    NamedCommands.registerCommand("ElevatorL4", new ElevatorAutoCommand(elevator, elevator.L4Height, 2));
+
+    NamedCommands.registerCommand("CoralIn", new CoralAutoCommand(coral, false, 1, 3));
+    NamedCommands.registerCommand("CoralOut", new CoralAutoCommand(coral, true, 1, 0.5));
+    NamedCommands.registerCommand("CoralOutBack", new CoralAutoCommand(coral, true, -0.125, 0.26));
+
+    NamedCommands.registerCommand("AlgaeIntakeIn", AlgaeIntake.GetAlgaeIntakeCommand(algaeIntake, 1, 1));
+    NamedCommands.registerCommand("AlgaeIntakeOut", AlgaeIntake.GetAlgaeIntakeCommand(algaeIntake, -1, 1));
+
+    NamedCommands.registerCommand("AlgaePivotUp", AlgaePivot.GetAlgaePivotCommand(algaePivot, 0));
+    NamedCommands.registerCommand("AlgaePivotDown", AlgaePivot.GetAlgaePivotCommand(algaePivot, 10));
+
+    this.swerveSubsystem = new SwerveSubsystem();
+    this.swerveDrive = swerveSubsystem.getSwerveDrive();
+
+    this.pathRunner = new PathRunner(swerveSubsystem);
     this.vision = new Vision(swerveDrive);
+
 
     
 
@@ -110,28 +133,18 @@ public class RobotContainer {
     configureCommands();
 
     
-    NamedCommands.registerCommand("ElevatorL1", Elevator.GetAutoCommand(elevator, 0));
-    NamedCommands.registerCommand("ElevatorL2", Elevator.GetAutoCommand(elevator, 10));
-    NamedCommands.registerCommand("ElevatorL3", Elevator.GetAutoCommand(elevator, 20));
-    NamedCommands.registerCommand("ElevatorL4", Elevator.GetAutoCommand(elevator, 30));
+    //NamedCommands.registerCommand("Print", new Command.PrintCommand());
 
-    NamedCommands.registerCommand("CoralIn", Coral.GetCoralCommand(coral, 1, 1));
-    NamedCommands.registerCommand("CoralOut", Coral.GetCoralCommand(coral, -1, 1));
-
-    NamedCommands.registerCommand("AlgaeIntakeIn", AlgaeIntake.GetAlgaeIntakeCommand(algaeIntake, 1, 1));
-    NamedCommands.registerCommand("AlgaeIntakeOut", AlgaeIntake.GetAlgaeIntakeCommand(algaeIntake, -1, 1));
-
-    NamedCommands.registerCommand("AlgaePivotUp", AlgaePivot.GetAlgaePivotCommand(algaePivot, 0));
-    NamedCommands.registerCommand("AlgaePivotDown", AlgaePivot.GetAlgaePivotCommand(algaePivot, 10));
+    
   }
 
   
 
   private void configureCommands() {
 
-    pathRunner.setDefaultCommand(
-      pathRunner.GetTeleopCommand(driverController)
-    );
+    //pathRunner.setDefaultCommand(
+    //  pathRunner.GetTeleopCommand(driverController)
+    //);
     
     vision.setDefaultCommand(new VisionTeleopCommand(
         vision, 
@@ -176,17 +189,19 @@ public class RobotContainer {
    */
   private void configureBindings() {
     
-    DoubleSupplier swerveScalar = () -> driverController.getLeftBumperButton() ? 0.5 : 1.0;
+    DoubleSupplier swerveScalar = () -> driverController.getLeftBumperButton() || driverController.getRightBumperButton() ? 0.5 : 1.0;
     SwerveInputStream driveAngularVelocity = SwerveInputStream.of(
       swerveSubsystem.getSwerveDrive(),
-      () -> driverController.getLeftY() * swerveScalar.getAsDouble(),
-      () -> driverController.getLeftX() * swerveScalar.getAsDouble()
+      () -> driverController.getLeftY() * -swerveScalar.getAsDouble(),
+      () -> driverController.getLeftX() * -swerveScalar.getAsDouble()
     )
-      .withControllerRotationAxis(() -> driverController.getRightX() * swerveScalar.getAsDouble())
+      .withControllerRotationAxis(() -> -driverController.getRightX() * swerveScalar.getAsDouble())
       .deadband(OperatorConstants.DEADBAND)
-      .scaleTranslation(0.8)
+      .scaleTranslation(0.8)//####################################driver 1 deadband##################################3
       .allianceRelativeControl(true);
 
+
+      
     //SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
     //  .withControllerHeadingAxis(driverController::getRightX,
     //      driverController::getRightY)
@@ -195,7 +210,6 @@ public class RobotContainer {
     //Command driveFieldOrientedDirectAngle = swerveSubsystem.driveFieldOriented(driveDirectAngle);
 
     Command DriveFieldOrientedAngularVelocity = swerveSubsystem.driveFieldOriented(
-      swerveSubsystem, 
       driveAngularVelocity, 
       () -> driverController.getPOV() != -1
     );

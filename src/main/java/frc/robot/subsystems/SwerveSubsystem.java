@@ -42,10 +42,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public SwerveSubsystem() {
     try {
-      swerveDrive = new SwerveParser(directory).createSwerveDrive(Constants.MAX_SPEED,
-          new Pose2d(new Translation2d(Meter.of(1),
-              Meter.of(4)),
-              Rotation2d.fromDegrees(0)));
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(
+        Constants.MAX_SPEED,
+        new Pose2d(
+          new Translation2d(Meter.of(1),
+          Meter.of(4)),
+          Rotation2d.fromDegrees(0)));
       // Alternative method if you don't want to supply the conversion factor via JSON
       // files.
       // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed,
@@ -112,11 +114,11 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrive.driveFieldOriented(velocity);
   }
 
-  public Command driveFieldOriented(SwerveSubsystem swerveSubsystem, Supplier<ChassisSpeeds> velocity, BooleanSupplier dPadDown) {
+  public Command driveFieldOriented(Supplier<ChassisSpeeds> velocity, BooleanSupplier dPadDown) {
     return run(() -> {
       swerveDrive.driveFieldOriented(velocity.get());
       if(dPadDown.getAsBoolean()) {
-        swerveSubsystem.zeroGyro();
+        zeroGyro();
        
       }
       
@@ -149,7 +151,7 @@ public class SwerveSubsystem extends SubsystemBase {
           // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
           (speedsRobotRelative, moduleFeedForwards) -> {
             
-              swerveDrive.setChassisSpeeds(speedsRobotRelative);
+            swerveDrive.setChassisSpeeds(speedsRobotRelative);
             
           },
           // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also
@@ -172,7 +174,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
             var alliance = DriverStation.getAlliance();
             if (alliance.isPresent()) {
-              return alliance.get() == DriverStation.Alliance.Blue;
+              return alliance.get() == DriverStation.Alliance.Red;
             }
             return false;
           },

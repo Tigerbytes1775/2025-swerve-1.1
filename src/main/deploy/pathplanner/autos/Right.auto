@@ -9,11 +9,29 @@
           "data": {
             "pathName": "Right Path"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ElevatorL3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CoralOut"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ElevatorL1"
+          }
         }
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

@@ -38,12 +38,12 @@ public class Coral extends SubsystemBase {
         return run(() -> {
 
             setInMotor(
-              controller.getLeftTriggerAxis() > 0.1 ? 1 : 0
+              controller.getRightTriggerAxis() > 0.1 ? 1 : 0
             );
             
             setOutMotor(
-              controller.getRightTriggerAxis() > 0.1 ? 
-              1 : controller.getPOV() != -1 ?
+              controller.getLeftTriggerAxis() > 0.1 ? 
+              1 : controller.getPOV() != -1 && controller.getPOV() != 180?
               -0.2 : 0
             );
     
@@ -51,25 +51,63 @@ public class Coral extends SubsystemBase {
         );
     }
 
-    public static Command GetCoralCommand(Coral coral, double percent, double commandTime) {
+    public static Command GetCoralOutCommand(Coral coral, double percent, double commandTime) {
         return new Command() {
             
             private final Timer timer = new Timer();
             
             @Override
             public void initialize() {
+                coral.setOutMotor(percent);
                 timer.reset();
                 timer.start();
             }
 
             @Override
-                public void execute() {
-               // coral.setMotors(percent);
+            public void execute() {
+                coral.setOutMotor(percent);
             }
 
             @Override
             public boolean isFinished() {
-                return timer.get() <= commandTime;
+                return timer.get() >= commandTime;
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                coral.setOutMotor(0);
+            }
+
+            
+        };
+
+    }
+
+    public static Command GetCoralInCommand(Coral coral, double percent, double commandTime) {
+        return new Command() {
+            
+            private final Timer timer = new Timer();
+            
+            @Override
+            public void initialize() {
+                coral.setInMotor(percent);
+                timer.reset();
+                timer.start();
+            }
+
+            //@Override
+            //public void execute() {
+            //    coral.setInMotor(percent);
+            //}
+
+            @Override
+            public boolean isFinished() {
+                return timer.get() >= commandTime;
+            }
+
+            @Override
+            public void end(boolean interrupted) {
+                coral.setInMotor(0);
             }
         };
 

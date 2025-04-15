@@ -20,11 +20,12 @@ public class ElevatorTeleopCommand extends Command{
     @Override
     public void initialize() {
         elevator.zeroEncoder();
+        elevator.pidEnabled = false;
     }
 
     @Override
     public void execute() {
-        double rightY = MathUtil.applyDeadband(controller.getRightY(), 0.1);
+        double rightY = MathUtil.applyDeadband(controller.getRightY(), 0.25);
 
         boolean aButton = controller.getAButtonPressed();
         boolean bButton = controller.getBButtonPressed();
@@ -33,6 +34,11 @@ public class ElevatorTeleopCommand extends Command{
 
         boolean anyPidButton = aButton || bButton || xButton || yButton;
 
+        int dpad = controller.getPOV();
+
+        if(dpad == 180) {
+            elevator.zeroEncoder();
+        }
 
         elevator.pidEnabled = 
             rightY != 0 ?
@@ -40,6 +46,7 @@ public class ElevatorTeleopCommand extends Command{
             true : elevator.pidEnabled;
             
 
+        
 
         if(elevator.pidEnabled) {
             
@@ -55,6 +62,8 @@ public class ElevatorTeleopCommand extends Command{
             elevator.update();
         } else {
             elevator.setMotors(rightY);
+
+            
         }
         
     };
