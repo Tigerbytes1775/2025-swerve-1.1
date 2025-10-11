@@ -15,7 +15,7 @@ public class AlgaeIntake extends SubsystemBase {
     
     private final SparkMax algaeMotor = new SparkMax(31, SparkLowLevel.MotorType.kBrushless);
 
-    double algeaStrength = 0.05;
+    double algeaStrength = 0.25;
     
     
     public AlgaeIntake() {}
