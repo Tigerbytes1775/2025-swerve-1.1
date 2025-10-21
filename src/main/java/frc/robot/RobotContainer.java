@@ -33,7 +33,7 @@ import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.AlgaePivot;
 import frc.robot.subsystems.Coral;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.PathRunner;
+//import frc.robot.subsystems.PathRunner;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.Vision;
 import swervelib.SwerveDrive;
@@ -68,7 +68,7 @@ public class RobotContainer {
   private final Coral coral;
   private final AlgaeIntake algaeIntake;
   private final AlgaePivot algaePivot;
-  private final PathRunner pathRunner; //= new PathRunner();
+  //private final PathRunner pathRunner; //= new PathRunner();
 
 
 
@@ -119,7 +119,7 @@ public class RobotContainer {
     this.swerveSubsystem = new SwerveSubsystem();
     this.swerveDrive = swerveSubsystem.getSwerveDrive();
 
-    this.pathRunner = new PathRunner(swerveSubsystem);
+    //this.pathRunner = new PathRunner(swerveSubsystem);
     this.vision = new Vision(swerveDrive);
 
 

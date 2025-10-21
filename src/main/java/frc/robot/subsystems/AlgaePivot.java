@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.Util;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
 
@@ -13,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class AlgaePivot extends SubsystemBase {
     
+private final double deadband = 0.0825;
+
     private final SparkFlex algaeMotor;
 
     private final double algeaPowerUp = -0.1;
@@ -36,10 +39,13 @@ public class AlgaePivot extends SubsystemBase {
         
 
         double power = 
-            percent == 0 ?
+            percent == 0?
             0 : percent > 0?
-            algeaPowerUp : algeaPowerDown;
+            algeaPowerUp : -algeaPowerDown;
 
+        power *= percent;
+
+        SmartDashboard.putNumber("Algae Pivot joy percent(%)", percent);
         SmartDashboard.putNumber("Algae Pivot Power(%)", power);
         SmartDashboard.putNumber("Algae Pivot Pos", algaeMotor.getAbsoluteEncoder().getPosition());
 
